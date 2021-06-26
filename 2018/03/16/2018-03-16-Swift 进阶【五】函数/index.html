@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="在 Swift 中函数是一等公民。 要理解 Swift 中的函数和闭包，需要先明白三件事情，按重要程度进行大致排序如下：  函数可以像 Int 或者 String 那样被赋值给变量，也可以作为另一个函数的输入参数，或者另一个函数的返回值来使用。 函数能够捕获存在于其局部作用域之外的变量。 有两种方法可以创建函数，一种是使用 func 关键字，另一种是 &amp;#123; &amp;#125;。在 Swift 中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift 进阶【五】函数">
+<meta property="og:url" content="http://example.com/2018/03/16/2018-03-16-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%94%E3%80%91%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="在 Swift 中函数是一等公民。 要理解 Swift 中的函数和闭包，需要先明白三件事情，按重要程度进行大致排序如下：  函数可以像 Int 或者 String 那样被赋值给变量，也可以作为另一个函数的输入参数，或者另一个函数的返回值来使用。 函数能够捕获存在于其局部作用域之外的变量。 有两种方法可以创建函数，一种是使用 func 关键字，另一种是 &amp;#123; &amp;#125;。在 Swift 中">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.873Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/03/16/2018-03-16-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%94%E3%80%91%E5%87%BD%E6%95%B0/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swift 进阶【五】函数 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-Swift-%E4%B8%AD%E5%87%BD%E6%95%B0%E6%98%AF%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">在 Swift 中函数是一等公民。</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E8%A2%AB%E8%B5%8B%E5%80%BC%E7%BB%99%E5%8F%98%E9%87%8F%EF%BC%8C%E4%B9%9F%E8%83%BD%E5%A4%9F%E4%BD%9C%E4%B8%BA%E5%87%BD%E6%95%B0%E7%9A%84%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA"><span class="nav-number">1.0.1.</span> <span class="nav-text">函数可以被赋值给变量，也能够作为函数的输入和输出</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E6%8D%95%E8%8E%B7%E5%AD%98%E5%9C%A8%E4%BA%8E%E5%AE%83%E4%BB%AC%E4%BD%9C%E7%94%A8%E8%8C%83%E5%9B%B4%E4%B9%8B%E5%A4%96%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-number">1.0.2.</span> <span class="nav-text">函数可以捕获存在于它们作用范围之外的变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8-%E6%9D%A5%E5%A3%B0%E6%98%8E%E4%B8%BA%E9%97%AD%E5%8C%85%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.0.3.</span> <span class="nav-text">函数可以使用 { } 来声明为闭包表达式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inout-%E5%8F%82%E6%95%B0%E5%92%8C%E5%8F%AF%E5%8F%98%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">inout 参数和可变方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E5%87%BD%E6%95%B0%E5%92%8Cinout"><span class="nav-number">3.</span> <span class="nav-text">嵌套函数和inout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">计算属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E5%AD%98%E5%82%A8%E5%B1%9E%E6%80%A7%EF%BC%88%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">延迟存储属性（懒加载）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#escaping-%E6%A0%87%E6%B3%A8"><span class="nav-number">6.</span> <span class="nav-text">@escaping 标注</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/03/16/2018-03-16-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%94%E3%80%91%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift 进阶【五】函数
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-03-16 00:00:00" itemprop="dateCreated datePublished" datetime="2018-03-16T00:00:00+08:00">2018-03-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="在-Swift-中函数是一等公民。"><a href="#在-Swift-中函数是一等公民。" class="headerlink" title="在 Swift 中函数是一等公民。"></a>在 Swift 中函数是一等公民。</h3><hr>
+<p>要理解 Swift 中的函数和闭包，需要先明白三件事情，按重要程度进行大致排序如下：</p>
+<ol>
+<li>函数可以像 Int 或者 String 那样被赋值给变量，也可以作为另一个函数的输入参数，或者另一个函数的返回值来使用。</li>
+<li>函数能够捕获存在于其局部作用域之外的变量。</li>
+<li>有两种方法可以创建函数，一种是使用 <code>func</code> 关键字，另一种是 <code>&#123; &#125;</code>。在 Swift 中，后一种被称为<strong>闭包表达式</strong>。</li>
+</ol>
+<h5 id="函数可以被赋值给变量，也能够作为函数的输入和输出"><a href="#函数可以被赋值给变量，也能够作为函数的输入和输出" class="headerlink" title="函数可以被赋值给变量，也能够作为函数的输入和输出"></a>函数可以被赋值给变量，也能够作为函数的输入和输出</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个函数接受 Int 值并将其打印</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printInt</span><span class="params">(i: Int)</span></span> &#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;you passed \(i)&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要将函数赋值给一个变量，比如 funVar，我们只需要将函数名字作为值就可以了。注意在函数名后没有括号：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> funVar = printInt</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>现在，我们可以使用 funVar 变量来调用 printInt 函数。注意在函数名后面需要使用括号：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">funVar(<span class="number">2</span>) <span class="comment">// 将打印 &quot;you passed 2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们也能够写出一个接受函数作为参数的函数：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">useFunction</span><span class="params">(function: <span class="params">(Int)</span></span></span> -&gt; () ) &#123;</span><br><span class="line">    function(<span class="number">3</span>)</span><br><span class="line">&#125;</span><br><span class="line">useFunction(function: printInt) <span class="comment">// you passed 3</span></span><br><span class="line">useFunction(function: funVar) <span class="comment">// you passed 3</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么将函数作为变量来处理这件事情如此关键？因为它让你很容易写出 “高阶” 函数，高阶函数将函数作为参数的能力使得它们在很多方面都非常有用。</p>
+<p>你也可以在其他函数中返回一个函数：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">returnFunc</span><span class="params">()</span></span> -&gt; (<span class="type">Int</span>) -&gt; <span class="type">String</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">innerFunc</span><span class="params">(i: Int)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;you passed \(i)&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> innerFunc</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> myFunc = returnFunc()</span><br><span class="line">myFunc(<span class="number">3</span>) <span class="comment">// you passed 3</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="函数可以捕获存在于它们作用范围之外的变量"><a href="#函数可以捕获存在于它们作用范围之外的变量" class="headerlink" title="函数可以捕获存在于它们作用范围之外的变量"></a>函数可以捕获存在于它们作用范围之外的变量</h5><p>当函数引用了在函数作用域外部的变量时，这个变量就被 “捕获” 了，它们将会继续存在，而不是在超过作用域后被摧毁。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">counterFunc</span><span class="params">()</span></span> -&gt; (<span class="type">Int</span>) -&gt; <span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> counter = <span class="number">0</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">innerFunc</span><span class="params">(i: Int)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">        counter += i <span class="comment">// counter is captured</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;running total: \(counter)&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> innerFunc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一般来说，因为 counter 是一个 counterFunc 的局部变量，它在 return 语句执行之后应该离开作用域并被摧毁。但是这个因为 innerFunc 捕获了它，它将继续存在。我们在结构体和类讨论过，counter 将存在于堆上而非栈上。我们可以多次调用 innerFunc，并且看到 running total 的输出在增加：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> f = counterFunc()</span><br><span class="line">f(<span class="number">3</span>) <span class="comment">// running total: 3</span></span><br><span class="line">f(<span class="number">4</span>) <span class="comment">// running total: 7</span></span><br></pre></td></tr></table></figure>
+
+<p>如果我们再次调用 counterFunc() 函数，将会生成并“捕获”新的 counter 变量：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> g = counterFunc()</span><br><span class="line">g(<span class="number">2</span>) <span class="comment">// running total: 2</span></span><br><span class="line">g(<span class="number">2</span>) <span class="comment">// running total: 4</span></span><br></pre></td></tr></table></figure>
+
+<p>这不影响我们的第一个函数，它拥有它自己的 counter：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(<span class="number">2</span>) <span class="comment">// running total: 9</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>你可以将这些函数以及它们所捕获的变量想象为一个类的实例，这个类拥有一个单一的方法 (也就是这里的函数) 以及一些成员变量 (这里的被捕获的变量)。</strong></p>
+<p><strong>在编程术语里，一个函数和它所捕获的变量环境组合起来被称为闭包。上面 f 和 g 都是闭包的例子，因为它们捕获并使用了一个在它们外部声明的非局部变量 counter。</strong></p>
+<h5 id="函数可以使用-来声明为闭包表达式"><a href="#函数可以使用-来声明为闭包表达式" class="headerlink" title="函数可以使用 { } 来声明为闭包表达式"></a>函数可以使用 { } 来声明为闭包表达式</h5><p>在 Swift 中，定义函数的方法有两种。一种是像上面所示那样使用 func 关键字。另一种方法是使用<strong>闭包表达式</strong>。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doubler</span><span class="params">(i: Int)</span></span> -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> i * <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>].<span class="built_in">map</span>(doubler) <span class="comment">// [2, 4, 6, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>使用闭包表达式的语法来写相同的函数，像之前那样将它传给 map：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> doublerAlt = &#123; (i: <span class="type">Int</span>) -&gt; <span class="type">Int</span> <span class="keyword">in</span> <span class="keyword">return</span> i*<span class="number">2</span> &#125;</span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>].<span class="built_in">map</span>(doublerAlt) <span class="comment">// [2, 4, 6, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用闭包表达式来定义的函数可以被想成函数的字面量</strong>，就和 1 是整数字面量，”hello” 是字符串字面量那样。与 func 相比较，它的区别在于闭包表达式是匿名的，它们没有被赋予一个名字。使用它们的唯一方法是在它们被创建时将其赋值给一个变量，就像我们这里对 doubler 进行的赋值一样。</p>
+<p><strong>使用闭包表达式声明的 doubler，和之前我们使用 func 关键字声明的函数，其实是完全等价的。它们甚至存在于同一个“命名空间”中，这一点和一些其他语言有所不同。</strong></p>
+<p>这里，我们将 doubler map 的例子用短得多的形式进行了重写：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="built_in">map</span> &#123; $<span class="number">0</span> * <span class="number">2</span> &#125; <span class="comment">// [2, 4, 6]</span></span><br></pre></td></tr></table></figure>
+
+<p>之所以看起来和原来很不同，是因为我们使用了 Swift 中的一些特性，来让代码更加简洁。我们来一个个看看这些用到的特性：</p>
+<ol>
+<li>如果你将闭包作为参数传递，并且你不再用这个闭包做其他事情的话，就没有必要现将它存储到一个局部变量中。可以想象一下比如 5*i 这样的数值表达式，你可以把它直接传递给一个接受 Int 的函数，而不必先将它计算并存储到变量里。</li>
+<li>如果编译器可以从上下文中推断出类型的话，你就不需要指明它了。在我们的例子中，从数组元素的类型可以推断出传递给 map 的函数接受 Int 作为参数，从闭包的乘法结果的类型可以推断出闭包返回的也是 Int。</li>
+<li>如果闭包表达式的主体部分只包括一个单一的表达式的话，它将自动返回这个表达式的结果，你可以不写 return。</li>
+<li>Swift 会自动为函数的参数提供简写形式，$0 代表第一个参数，$1 代表第二个参数，以此类推。</li>
+<li>如果函数的最后一个参数是闭包表达式的话，你可以将这个闭包表达式移到函数调用的圆括号的外部。这样的尾随闭包语法在多行的闭包表达式中表现非常好，因为它看起来更接近于装配了一个普通的函数定义，或者是像 if (expr) { } 这样的执行块的表达形式。</li>
+<li>最后，如果一个函数除了闭包表达式外没有别的参数，那么方法名后面的调用时的圆括号也可以一并省略。</li>
+</ol>
+<p><strong>最后要说明的是关于命名的问题。要清楚，那些使用 func 声明的函数也可以是闭包，就和用 { } 声明的是一样的。记住，闭包指的是一个函数以及被它所捕获的所有变量的组合。而使用 { } 来创建的函数被称为闭包表达式，人们常常会把这种语法简单地叫做闭包。但是不要因此就认为使用闭包表达式语法声明的函数和其他方法声明的函数有什么不同。它们都是一样的，它们都是函数，也都可以是闭包。</strong> </p>
+<h3 id="inout-参数和可变方法"><a href="#inout-参数和可变方法" class="headerlink" title="inout 参数和可变方法"></a>inout 参数和可变方法</h3><hr>
+<p>如果你有一些 <code>C</code> 或者 <code>C++</code> 背景的话，在 Swift 中 <code>inout</code> 参数前面使用的 <code>&amp;</code> 符号可能会给你一种它是传递引用的印象。但事实并非如此，<code>inout</code> 做的事情是通过值传递，然后复制回来，而并不是传递引用。 引用官方《Swift 编程语言》中的话：</p>
+<blockquote>
+<p>inout 参数将一个值传递给函数，函数可以改变这个值，然后将原来的值替换掉，并从函数中传出。  </p>
+</blockquote>
+<h3 id="嵌套函数和inout"><a href="#嵌套函数和inout" class="headerlink" title="嵌套函数和inout"></a>嵌套函数和inout</h3><hr>
+<p>在一个嵌套函数中也可以使用 <code>inout</code> 关键词，Swift 依然会保证你的使用是安全的。比如说，你可以定义一个嵌套函数（使用 func 或者使用闭包表达式），然后安全地改变一个 <code>inout</code> 的参数：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">incrementTenTimes</span><span class="params">(value: <span class="keyword">inout</span> Int)</span></span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">inc</span><span class="params">()</span></span> &#123;</span><br><span class="line">        value += <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> <span class="keyword">_</span> <span class="keyword">in</span> <span class="number">0</span>..&lt;<span class="number">10</span> &#123;</span><br><span class="line">        inc()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> x = <span class="number">0</span></span><br><span class="line">incrementTenTimes(value: &amp;x)</span><br><span class="line">x <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+
+<p>不过，你不能够让这个 <code>inout</code> 参数逃逸（我们会在本章最后详细提到逃逸函数的内容）：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">escapeIncrement</span><span class="params">(value: <span class="keyword">inout</span> Int)</span></span> -&gt; () -&gt; () &#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">inc</span><span class="params">()</span></span> &#123;</span><br><span class="line">        value += <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以这么理解，因为 <code>inout</code> 的值会在函数返回之前复制回去，那么要是我们可以在函数返回之后再去改变它，应该要怎么做呢？是说值应该在改变以后再复制吗？要是调用源已经不存在了怎么办？编译器必须对此进行验证，因为这对保证安全十分关键。</p>
+<h3 id="计算属性"><a href="#计算属性" class="headerlink" title="计算属性"></a>计算属性</h3><hr>
+<p>计算属性看起来和常规的属性很像，但是它并不使用任何内存来存储自己的值。相反，这个属性每次被访问时，返回值都将被实时计算出来。 </p>
+<p>举个简单的例子，GPS 追踪信息结构体：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">GPSTrack</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span>(<span class="keyword">set</span>) <span class="keyword">var</span> record: [(<span class="type">CLLocation</span>, <span class="type">Date</span>)] = []</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">GPSTrack</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 返回 GPS 追踪的所有日期</span></span><br><span class="line">    <span class="comment">/// - 复杂度：O(n)，n 是记录点的数量。</span></span><br><span class="line">    <span class="keyword">var</span> dates: [<span class="type">Date</span>] &#123;</span><br><span class="line">        <span class="keyword">return</span> record.<span class="built_in">map</span> &#123; $<span class="number">0.1</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为我们没有指定 <code>setter</code>，所以 <code>dates</code> 属性是只读的。它的结果不会被缓存，每次在你调用 <code>dates</code> 属性时，结果都要被计算一遍。<strong>Swift API 指南推荐你对所有复杂度不是 O(1) 的计算属性都应该在文档中写明，因为调用者可能会假设一个计算属性的耗时是常数时间。</strong></p>
+<h3 id="延迟存储属性（懒加载）"><a href="#延迟存储属性（懒加载）" class="headerlink" title="延迟存储属性（懒加载）"></a>延迟存储属性（懒加载）</h3><hr>
+<p>延迟初始化一个值在 Swift 中是一种常见的模式，Swift 为此准备了一个特殊的 <code>lazy</code> 关键字来定义一个延迟属性（lazy property）。需要注意，延迟属性会被自动声明为 <code>mutating</code>，因此，这个属性也必须被声明为 <code>var</code>。延迟修饰符是编程记忆化的一种特殊形式。</p>
+<p>比如，如果我们有一个 <code>view controller</code> 来显示 GPSTrack，我们可能会想展示一张追踪的预览图像。通过将属性改为延迟加载，我们可以将昂贵的图像生成工作推迟到属性被首次访问：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GPSTrackViewController</span>: <span class="title">UIViewController</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> track: <span class="type">GPSTrack</span> = <span class="type">GPSTrack</span>()</span><br><span class="line">    <span class="built_in">lazy</span> <span class="keyword">var</span> preview: <span class="type">UIImage</span> = &#123;</span><br><span class="line">        <span class="keyword">for</span> point <span class="keyword">in</span> <span class="keyword">self</span>.track.record &#123;</span><br><span class="line">            <span class="comment">// 进行昂贵的计算</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="type">UIImage</span>()</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们第一次访问这个属性 <code>preview</code> 的时候，闭包将被执行（注意闭包后面的括号），它的返回值被存储在变量中。</p>
+<p><strong>如果 <code>track</code> 属性发生了改变，<code>preview</code> 并不会自动更新。</strong>让我们来用一个更简单的例子来看看发生了什么。我们有一个 <code>Point</code> 结构体，并且用延迟的方式存储了 <code>distanceFromOrigin</code>：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Point</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> x: <span class="type">Double</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> y: <span class="type">Double</span> = <span class="number">0</span></span><br><span class="line">    <span class="built_in">lazy</span> <span class="keyword">var</span> distanceFromOrigin: <span class="type">Double</span> = <span class="keyword">self</span>.x * <span class="keyword">self</span>.x + <span class="keyword">self</span>.y * <span class="keyword">self</span>.y</span><br><span class="line">    <span class="keyword">init</span>(x: <span class="type">Double</span>, y: <span class="type">Double</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.x = x</span><br><span class="line">        <span class="keyword">self</span>.y = y</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> point = <span class="type">Point</span>(x: <span class="number">3</span>, y: <span class="number">4</span>)</span><br><span class="line">point.distanceFromOrigin <span class="comment">// 25.0</span></span><br><span class="line">point.x += <span class="number">10</span></span><br><span class="line">point.distanceFromOrigin <span class="comment">// 25.0</span></span><br></pre></td></tr></table></figure>
+
+<p>当我们创建一个点后，可以访问 <code>distanceFromOrigin</code> 属性，这将会计算出值，并存储起来<strong>等待重用</strong>。不过，如果我们之后改变了 x 的值，这个变化将不会反应在 <code>distanceFromOrigin</code> 中。</p>
+<p>解决办法：将其改为普通的（非延迟）计算属性。</p>
+<h3 id="escaping-标注"><a href="#escaping-标注" class="headerlink" title="@escaping 标注"></a>@escaping 标注</h3><hr>
+<p>正如我们在之前一章中看到的那样，在处理闭包时我们需要对内存格外小心。回想一下捕获列表的例子，在那个例子中为了避免引用循环，我们将 <code>view</code> 标记为了 <code>weak</code> ：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">window?.onRotate = &#123; [<span class="keyword">weak</span> view] <span class="keyword">in</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;We now also need to update the view: \(view)&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，在我们使用 <code>map</code> 这样的函数的时候，我们从来不会去把什么东西标记为 <code>weak</code>。因为 <code>map</code> 将同步执行，这个闭包不会被任何地方持有，也不会有引用循环被创建出来，所以并不需要这么做。和我们传递给 <code>map</code> 的闭包相比，这里存储在 <code>onRotate</code> 中的闭包是逃逸的 (escape)，两者有所区别。</p>
+<p>一个被保存在某个地方等待稍后（比如函数返回以后）再调用的闭包就叫做<strong>逃逸闭包</strong>。而传递给 <code>map</code> 的闭包会在 <code>map</code> 中被直接使用。这意味着编译去不需要改变在闭包中被捕获的变量的引用计数。</p>
+<blockquote>
+<p>在 Swift 3 之前，事情完全相反：那时候逃逸闭包是默认的，对非逃逸闭包，你需要标记出<code>@noescape</code>。Swift 3 的行为更好，因为它默认是安全的：如果一个函数参数可能导致引用循环，那么它需要被显式地标记出来。<code>@escaping</code> 标记可以作为一个警告，来提醒使用这个函数的开发者注意引用关系。非逃逸闭包可以被编译器高度优化，快速的执行路径将被作为基准而使用，除非你在有需要的时候显式地使用其他方法。  </p>
+</blockquote>
+<p><strong>注意默认非逃逸的规则只对那些直接参数位置（immediate parameter position）的函数类型有效。也就是说，类型是函数的存储属性将会是逃逸的（这很正常）。出乎意料的是，对于那些使用闭包作为参数的函数，如果闭包被封装到像是多元组或者可选值等类型的话，这个闭包参数也是逃逸的。因为在这种情况下闭包不是直接参数，它将自动变为逃逸闭包。这样的结果是，你不能写出一个函数，使它接受的函数参数同时满足可选值和非逃逸。很多情况下，你可以通过为闭包提供一个默认值来避免可选值。如果这样做行不通的话，可以通过重载函数，提供一个包含可选值 (逃逸) 的函数，以及一个不可选，不逃逸的函数来绕过这个限制：</strong></p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">transform</span><span class="params">(<span class="keyword">_</span> input: Int, with f: <span class="params">(<span class="params">(Int)</span></span></span></span> -&gt; <span class="type">Int</span>)?) -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Using optional overload&quot;</span>)</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> f = f <span class="keyword">else</span> &#123; <span class="keyword">return</span> input &#125;</span><br><span class="line">    <span class="keyword">return</span> f(input)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">transform</span><span class="params">(<span class="keyword">_</span> input: Int, with f: <span class="params">(Int)</span></span></span> -&gt; <span class="type">Int</span>) -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Using non-optional overload&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> f(input)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">transform(<span class="number">10</span>, with: <span class="literal">nil</span>) <span class="comment">// 使用可选值重载</span></span><br><span class="line">transform(<span class="number">10</span>) &#123; $<span class="number">0</span> * $<span class="number">0</span> &#125; <span class="comment">// 使用非可选值重载</span></span><br></pre></td></tr></table></figure>
+
+<p>这样一来，如果用 <code>nil</code> 参数（或者一个可选值类型的变量）来调用函数，将使用可选值变种，而如果使用闭包字面量的调用将使用非逃逸和非可选值的重载方法。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift%E5%AD%A6%E4%B9%A0/" rel="tag"># Swift学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/03/14/2018-03-14-%E5%86%85%E5%AD%98%EF%BC%9A%E6%A0%88%E5%92%8C%E5%A0%86%EF%BC%88C%20:%20Swift%EF%BC%89/" rel="prev" title="内存：栈和堆（C / Swift）">
+                  <i class="fa fa-chevron-left"></i> 内存：栈和堆（C / Swift）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/17/2018-03-17-layoutIfNeeded()%20%E5%87%BD%E6%95%B0%E5%AF%B9%20UIScrollView%20%E7%9A%84%E5%BD%B1%E5%93%8D/" rel="next" title="layoutIfNeeded() 函数对 UIScrollView 的影响">
+                  layoutIfNeeded() 函数对 UIScrollView 的影响 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : '1d58406f984c4e62fe1dfef3bfba4f35',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

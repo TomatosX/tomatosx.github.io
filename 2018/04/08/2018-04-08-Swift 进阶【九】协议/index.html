@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="Swift 的协议和 Objective-C 的协议不同。Swift 协议可以被用作代理，也可以让你对接口进行抽象 (比如 IteratorProtocol 和 Sequence )。它们和 Objective-C 协议的最大不同在于我们可以让结构体和枚举类型满足协议。除此之外，Swift 协议还可以有关联类型。我们还可以通过协议扩展的方式为协议添加方法实现。我们会在面向协议编程的部分讨论所有这些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift 进阶【九】协议">
+<meta property="og:url" content="http://example.com/2018/04/08/2018-04-08-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B9%9D%E3%80%91%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="Swift 的协议和 Objective-C 的协议不同。Swift 协议可以被用作代理，也可以让你对接口进行抽象 (比如 IteratorProtocol 和 Sequence )。它们和 Objective-C 协议的最大不同在于我们可以让结构体和枚举类型满足协议。除此之外，Swift 协议还可以有关联类型。我们还可以通过协议扩展的方式为协议添加方法实现。我们会在面向协议编程的部分讨论所有这些">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.877Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/04/08/2018-04-08-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B9%9D%E3%80%91%E5%8D%8F%E8%AE%AE/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swift 进阶【九】协议 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">面向协议编程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E6%89%A9%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">协议扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%8D%8F%E8%AE%AE%E6%89%A9%E5%B1%95%E4%B8%AD%E9%87%8D%E5%86%99%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">在协议扩展中重写方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">协议的两种类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E6%8A%B9%E6%B6%88"><span class="nav-number">2.1.</span> <span class="nav-text">类型抹消</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E6%9C%89-Self-%E7%9A%84%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">带有 Self 的协议</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/04/08/2018-04-08-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B9%9D%E3%80%91%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift 进阶【九】协议
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-08 00:00:00" itemprop="dateCreated datePublished" datetime="2018-04-08T00:00:00+08:00">2018-04-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Swift 的协议和 Objective-C 的协议不同。<strong>Swift 协议可以被用作代理，也可以让你对接口进行抽象 (比如 <code>IteratorProtocol</code> 和 <code>Sequence</code> )。它们和 Objective-C 协议的最大不同在于我们可以让结构体和枚举类型满足协议。除此之外，Swift 协议还可以有关联类型。我们还可以通过协议扩展的方式为协议添加方法实现。</strong>我们会在面向协议编程的部分讨论所有这些内容。</p>
+<p>协议允许我们进行动态派发，也就是说，在运行时程序会根据消息接收者的类型去选择正确的方法实现。</p>
+<p>在面向对象编程中，子类是在多个类之间共享代码的有效方式。不过在 Swift 中，<code>Sequence</code> 中的代码共享是通过协议和协议扩展来实现的。通过这么做，<code>Sequence</code> 协议和它的扩展在结构体和枚举这样的值类型中依然可用，而这些值类型是不支持子类继承的。</p>
+<p>协议扩展是一种可以在不共享基类的前提下共享代码的方法。协议定义了一组最小可行的方法集合，以供类型进行实现。而类型通过扩展的方式在这些最小方法上实现更多更复杂的特性。</p>
+<a id="more"></a>
+
+<h3 id="面向协议编程"><a href="#面向协议编程" class="headerlink" title="面向协议编程"></a>面向协议编程</h3><hr>
+<p>比如在一个图形应用中，我们想要进行两种渲染：我们会将图形使用 <code>Core Graphics</code> 的 <code>CGContext</code> 渲染到屏幕上，或者创建一个 SVG 格式的图形文件。我们可以从定义绘图 API 的最小功能集的协议开始进行实现：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Drawing</span> </span>&#123;</span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addEllipse</span><span class="params">(rect: CGRect, fill: UIColor)</span></span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addRectangle</span><span class="params">(rect: CGRect, fill: UIColor)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>协议的最强大的特性之一就是我们可以以追溯的方式来修改任意类型，让它们满足协议。对于 <code>CGContext</code>，我们可以添加扩展来让它满足 <code>Drawing</code> 协议。对于 <code>SVG</code> 我们一样可以通过扩展让它满足 <code>Drawing</code> 协议。</p>
+<p>我们现在就可以写出独立于渲染目标的代码了；下面的代码只对 <code>context</code> 变量实现了 <code>Drawing</code> 协议进行了假设。如果我们决定使用 <code>CGContext</code> 来初始化一个 <code>context</code>，我们并不需要改变代码的任何部分：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> context: <span class="type">Drawing</span> = <span class="type">SVG</span>()</span><br><span class="line"><span class="keyword">let</span> rect1 = <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>, width: <span class="number">100</span>, height: <span class="number">100</span>)</span><br><span class="line"><span class="keyword">let</span> rect2 = <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>, width: <span class="number">50</span>, height: <span class="number">50</span>)</span><br><span class="line">context.addRectangle(rect: rect1, fill: .yellow)</span><br><span class="line">context.addEllipse(rect: rect2, fill: .blue)</span><br><span class="line">context</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">&lt;svg&gt;</span></span><br><span class="line"><span class="comment">&lt;rect cy=&quot;0.0&quot; fill=&quot;#010100&quot; ry=&quot;100.0&quot; rx=&quot;100.0&quot; cx=&quot;0.0&quot;/&gt;</span></span><br><span class="line"><span class="comment">&lt;ellipse cy=&quot;0.0&quot; fill=&quot;#000001&quot; ry=&quot;50.0&quot; rx=&quot;50.0&quot; cx=&quot;0.0&quot;/&gt;</span></span><br><span class="line"><span class="comment">&lt;/svg&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="协议扩展"><a href="#协议扩展" class="headerlink" title="协议扩展"></a>协议扩展</h4><p>Swift 的协议的另一个强大特性是我们可以使用完整的方法实现来扩展一个协议。你可以扩展你自己的协议，也可以对已有协议进行扩展。</p>
+<p>通过在扩展中添加 <code>addCircle</code>，我们就可以在 <code>CGContext</code> 和   中使用它了。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Drawing</span> </span>&#123;</span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addCircle</span><span class="params">(center: CGPoint, radius: CGFloat, fill: UIColor)</span></span> &#123;</span><br><span class="line">        <span class="keyword">let</span> diameter = radius * <span class="number">2</span></span><br><span class="line">        <span class="keyword">let</span> origin = <span class="type">CGPoint</span>(x: center.x - radius, y: center.y - radius)</span><br><span class="line">        <span class="keyword">let</span> size = <span class="type">CGSize</span>(width: diameter, height: diameter)</span><br><span class="line">        <span class="keyword">let</span> rect = <span class="type">CGRect</span>(origin: origin, size: size)</span><br><span class="line">        addEllipse(rect: rect, fill: fill)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过协议进行代码共享相比与通过继承的共享，有这几个优势：</strong></p>
+<ul>
+<li>我们不需要被强制使用某个父类。</li>
+<li>我们可以让已经存在的类型满足协议 (比如我们让 <code>CGContext</code> 满足了 <code>Drawing</code> )。子类就没那么灵活了，如果 <code>CGContext</code> 是一个类的话，我们无法以追溯的方式去变更它的父类。</li>
+<li>协议既可以用于类，也可以用于结构体，而父类就无法和结构体一起使用了。</li>
+<li>最后，当处理协议时，我们无需担心方法重写或者在正确的时间调用 <code>super</code> 这样的问题。</li>
+</ul>
+<h4 id="在协议扩展中重写方法"><a href="#在协议扩展中重写方法" class="headerlink" title="在协议扩展中重写方法"></a>在协议扩展中重写方法</h4><p>作为协议的作者，当你想在扩展中添加一个协议方法，你有两种方法。首先，你可以只在扩展中进行添加，就像我们上面 <code>addCircle</code> 所做的那样。或者，你还可以在协议定义本身中添加这个方法的声明，让它成为协议要求的方法。协议要求的方法是动态派发的，而仅定义在扩展中的方法是静态派发的。它们的区别虽然很微小，但不论对于协议的作者还是协议的使用者来说，都十分重要。</p>
+<p>首先，我们对 <code>SVG</code> 写一个 <code>addCircle</code> 扩展：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">SVG</span> </span>&#123;</span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addCircle</span><span class="params">(center: CGPoint, radius: CGFloat, fill: UIColor)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> attributes: [<span class="type">String</span>:<span class="type">String</span>] = [</span><br><span class="line">            <span class="string">&quot;cx&quot;</span>: <span class="string">&quot;\(center.x)&quot;</span>,</span><br><span class="line">            <span class="string">&quot;cy&quot;</span>: <span class="string">&quot;\(center.y)&quot;</span>,</span><br><span class="line">            <span class="string">&quot;r&quot;</span>: <span class="string">&quot;\(radius)&quot;</span>,</span><br><span class="line">        ]</span><br><span class="line">        attributes[<span class="string">&quot;fill&quot;</span>] = <span class="type">String</span>(hexColor: fill)</span><br><span class="line">        append(node: <span class="type">XMLNode</span>(tag: <span class="string">&quot;circle&quot;</span>, attributes: attributes))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在如果我们创建一个 <code>SVG</code> 实例并调用它的 <code>addCircle</code> 方法，结果将和你期待的一致：编译器将选择 <code>addCircle</code> 的最具体的版本，也就是定义在 <code>SVG</code> 扩展上的版本。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sample = <span class="type">SVG</span>()</span><br><span class="line">sample.addCircle(center: .zero, radius: <span class="number">20</span>, fill: .red)</span><br><span class="line"><span class="built_in">print</span>(sample)</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> &lt;svg&gt;</span></span><br><span class="line"><span class="comment"> &lt;circle cy=&quot;0.0&quot; fill=&quot;#010000&quot; r=&quot;20.0&quot; cx=&quot;0.0&quot;/&gt;</span></span><br><span class="line"><span class="comment"> &lt;/svg&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>如果像下面这样调用的话，它并不会使用 <code>SVG</code> 的 <code>addCircle</code> 方法。它调用的是 <code>Drawing</code> 中的 <code>addCircle</code> 方法。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> otherSample: <span class="type">Drawing</span> = <span class="type">SVG</span>()</span><br><span class="line">otherSample.addCircle(center: .zero, radius: <span class="number">20</span>, fill: .red)</span><br><span class="line"><span class="built_in">print</span>(otherSample)</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> &lt;svg&gt;</span></span><br><span class="line"><span class="comment"> &lt;ellipse cy=&quot;-20.0&quot; fill=&quot;#010000&quot; ry=&quot;40.0&quot; rx=&quot;40.0&quot; cx=&quot;-20.0&quot;/&gt;</span></span><br><span class="line"><span class="comment"> &lt;/svg&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以这样考虑这个行为：当我们对存在容器调用 <code>addCircle</code> 时，方法是静态派发的，也就是说，它总是会使用 <code>Drawing</code> 的扩展。如果它是动态派发，那么它肯定需要将方法的接收者 <code>SVG</code> 类型考虑在内。</p>
+<p>想要将 <code>addCircle</code> 变为动态派发，我们可以将它添加到协议定义里：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Drawing</span> </span>&#123;</span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addEllipse</span><span class="params">(rect: CGRect, fill: UIColor)</span></span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addRectangle</span><span class="params">(rect: CGRect, fill: UIColor)</span></span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">addCircle</span><span class="params">(center: CGPoint, radius: CGFloat, fill: UIColor)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="协议的两种类型"><a href="#协议的两种类型" class="headerlink" title="协议的两种类型"></a>协议的两种类型</h3><hr>
+<p>带有关联类型的协议和普通的协议是不同的。对于那些在协议定义中在任何地方使用了 <code>Self</code> 的协议来说也是如此。Swift 3 中，这样的协议不能被当作独立的类型来使用。这个限制可能会在今后实现了完整的泛型系统后被移除，但是在那之前，我们都必须要面对和处理这个限制。</p>
+<h4 id="类型抹消"><a href="#类型抹消" class="headerlink" title="类型抹消"></a>类型抹消</h4><p>我们可以将 <code>Drawing</code> 作为一个类型来使用。但是，对于 <code>IteratorProtocol</code> 来说，因为存在关联类型，这是不可能的 (至少现在还不可能)。编译器会给出这样的错误：“‘ <code>IteratorProtocol</code> ’ 协议含有 <code>Self</code> 或者关联类型，因此它只能被当作泛型约束使用。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> iterator: <span class="type">IteratorProtocol</span> = <span class="type">ConstantIterator</span>() <span class="comment">// Error</span></span><br></pre></td></tr></table></figure>
+
+<p>这就是说，将 <code>IteratorProtocol</code> 是一个不完整的类型。我们必须为它指明关联类型，否则单是关联类型的协议是没有意义的。</p>
+<blockquote>
+<p>Swift 团队指出过他们想要支持泛用存在 (generalized existentials)。这个特性将允许那些含有关联类型的协议也可以被当作独立的值来使用，这样它们就可以用来进行类型抹消了。如果你想要了解未来这方面会如何发展，你可以在 <a target="_blank" rel="noopener" href="https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20160229/011666.html">Swift 泛型声明</a>一文中找到详细信息。  </p>
+</blockquote>
+<h3 id="带有-Self-的协议"><a href="#带有-Self-的协议" class="headerlink" title="带有 Self 的协议"></a>带有 Self 的协议</h3><hr>
+<p>带有 Self 要求的协议在行为上和那些带有关联类型的协议很相似。最简单的带有 Self 的协议是 <code>Equatable</code>。它有一个 (运算符形式的) 方法，用来比较两个元素：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Equatable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> ==<span class="params">(lhs: <span class="keyword">Self</span>, rhs: <span class="keyword">Self</span>)</span></span> -&gt; <span class="type">Bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要为你自己的类型实现 <code>Equatable</code> 并不难。比如，我们有两个简单的 <code>MonetaryAmount</code> 结构体，我们可以通过比较它们的属性值来比较两个值：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MonetaryAmount</span>: <span class="title">Equatable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> currency: <span class="type">String</span></span><br><span class="line">    <span class="keyword">var</span> amountInCents: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> ==<span class="params">(lhs: MonetaryAmount, rhs: MonetaryAmount)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> lhs.currency == rhs.currency &amp;&amp;</span><br><span class="line">            lhs.amountInCents == rhs.amountInCents</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们不能简单地用 <code>Equatable</code> 来作为类型进行变量声明：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误：因为 &#x27;Equatable&#x27; 中有 Self 或者关联类型的要求，</span></span><br><span class="line"><span class="comment">// 所以它只能被用作泛型约束</span></span><br><span class="line"><span class="keyword">let</span> x: <span class="type">Equatable</span> = <span class="type">MonetaryAmount</span>(currency: <span class="string">&quot;EUR&quot;</span>, amountInCents: <span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这个关联类型所面临的问题是一样的：在这个 (不正确) 的声明中，我们并不清楚 Self 到底应该是什么。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift%E5%AD%A6%E4%B9%A0/" rel="tag"># Swift学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/04/2018-04-04-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%8D%A1%E7%89%87%E5%8A%A8%E7%94%BB%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="prev" title="多任务卡片动画实现原理">
+                  <i class="fa fa-chevron-left"></i> 多任务卡片动画实现原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/04/09/2018-04-09-RxSwift%20%E6%96%87%E6%A1%A3%EF%BC%9A%E5%87%BD%E6%95%B0%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="next" title="RxSwift 文档：函数响应式编程">
+                  RxSwift 文档：函数响应式编程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : '62ff53cffe0cfd6b958d33c0c8057e42',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

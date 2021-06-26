@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="问 我有一个带有 largeTitle 和 searchcontroller 的 navigationBar ，我的 tableView 有一个 refreshcontrol 。  当我拉动刷新时，refreshcontrol 的 activityIndicator 消失了，但是刷新过程仍然在继续，即使进程完成并且我调用 UIRefreshControll 的 endRefreshing() 方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 11 中 UIRefreshControll 消失【译】">
+<meta property="og:url" content="http://example.com/2018/07/07/2018-07-07-iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="问 我有一个带有 largeTitle 和 searchcontroller 的 navigationBar ，我的 tableView 有一个 refreshcontrol 。  当我拉动刷新时，refreshcontrol 的 activityIndicator 消失了，但是刷新过程仍然在继续，即使进程完成并且我调用 UIRefreshControll 的 endRefreshing() 方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-1.gif">
+<meta property="og:image" content="http://example.com/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-2.png">
+<meta property="og:image" content="http://example.com/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-3.png">
+<meta property="article:published_time" content="2018-07-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.884Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-1.gif">
+
+
+<link rel="canonical" href="http://example.com/2018/07/07/2018-07-07-iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iOS 11 中 UIRefreshControll 消失【译】 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE"><span class="nav-number">1.</span> <span class="nav-text">问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94"><span class="nav-number">2.</span> <span class="nav-text">答</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/07/2018-07-07-iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS 11 中 UIRefreshControll 消失【译】
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-07-07T00:00:00+08:00">2018-07-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%96%87%E7%AB%A0%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">文章翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="问"><a href="#问" class="headerlink" title="问"></a>问</h3><hr>
+<p>我有一个带有 <code>largeTitle</code> 和 <code>searchcontroller</code> 的 <code>navigationBar</code> ，我的 <code>tableView</code> 有一个 <code>refreshcontrol</code> 。 </p>
+<p>当我拉动刷新时，<code>refreshcontrol</code> 的 <code>activityIndicator</code> 消失了，但是刷新过程仍然在继续，即使进程完成并且我调用 <code>UIRefreshControll</code> 的 <code>endRefreshing()</code> 方法，导航栏也不会恢复到正常大小。</p>
+<p><img src="/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-1.gif"></p>
+<p>有人遇到过同样的问题吗？</p>
+<a id="more"></a>
+
+<h3 id="答"><a href="#答" class="headerlink" title="答"></a>答</h3><hr>
+<p>我已经找了几个星期，今天我终于找到了解决方案，终于成功了。解决的方式非常简单，我不敢相信我竟然没有早点找到。</p>
+<p>我正在使用带有 <code>UITableView</code> 的普通 <code>UIViewController</code>。我将约束设置成上与下都是 0，如图所示：</p>
+<p><img src="/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-2.png"></p>
+<p>一次，我改变了约束，将 <code>UITableView</code> 约束相对于 <code>Superview</code> 的所有边缘，值均为0，然后它竟然开始工作了：</p>
+<p><img src="/my_pictures/iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91-3.png"></p>
+<p>我甚至没有设置任何其他东西。我非常希望这能为你解决这个问题，因为它太烦人了……</p>
+<p>原文：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/46793716/ios-11-uirefreshcontrol-with-navigationbar-largetitle-and-searchcontroller-disap">iOS 11 UIRefreshControl with NavigationBar LargeTitle and SearchController disappearing
+</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag"># 翻译</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/07/06/2018-07-06-NavigationBar%20%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA/" rel="prev" title="在 Swift 4 中 NavigationBar 不同颜色时的转场">
+                  <i class="fa fa-chevron-left"></i> 在 Swift 4 中 NavigationBar 不同颜色时的转场
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/07/08/2018-07-08-%E5%A4%84%E7%90%86%20initialize()%20%E7%9A%84%E5%BC%83%E7%94%A8%E3%80%90%E8%AF%91%E3%80%91/" rel="next" title="处理 initialize() 的弃用【译】">
+                  处理 initialize() 的弃用【译】 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : 'ed33fa97ffb640f7edb7ff525ac14b24',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

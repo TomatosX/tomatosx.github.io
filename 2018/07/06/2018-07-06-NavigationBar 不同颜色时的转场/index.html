@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="我们在项目中，往往会遇到两个 Navigation Bar 样式不同的问题，如果直接用苹果官方的控件，会出现各种各样的 bug，因为苹果官方的 Navigation Bar 是共用的，所以在两个不同样式的 Navigation Bar 中做转场操作的时候就会出现各种问题。 今天我们就用 Method Swizzling 的方式来修改一下系统的 Navigation Bar 转场时的样式，最终效果如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Swift 4 中 NavigationBar 不同颜色时的转场">
+<meta property="og:url" content="http://example.com/2018/07/06/2018-07-06-NavigationBar%20%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="我们在项目中，往往会遇到两个 Navigation Bar 样式不同的问题，如果直接用苹果官方的控件，会出现各种各样的 bug，因为苹果官方的 Navigation Bar 是共用的，所以在两个不同样式的 Navigation Bar 中做转场操作的时候就会出现各种问题。 今天我们就用 Method Swizzling 的方式来修改一下系统的 Navigation Bar 转场时的样式，最终效果如">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/my_pictures/NavigationBar%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA-1.gif">
+<meta property="article:published_time" content="2018-07-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.884Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="Swift">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/my_pictures/NavigationBar%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA-1.gif">
+
+
+<link rel="canonical" href="http://example.com/2018/07/06/2018-07-06-NavigationBar%20%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在 Swift 4 中 NavigationBar 不同颜色时的转场 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%AF%BC%E8%88%AA%E6%A0%8F%E7%9A%84%E8%83%8C%E6%99%AF%E9%A2%9C%E8%89%B2"><span class="nav-number">1.</span> <span class="nav-text">设置导航栏的背景颜色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9C%E8%89%B2%E8%BF%87%E5%BA%A6-runtime"><span class="nav-number">2.</span> <span class="nav-text">颜色过度 - runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E9%A2%9C%E8%89%B2%E7%9A%84%E8%BF%87%E5%BA%A6"><span class="nav-number">3.</span> <span class="nav-text">计算颜色的过度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/06/2018-07-06-NavigationBar%20%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 Swift 4 中 NavigationBar 不同颜色时的转场
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-07-06 00:00:00" itemprop="dateCreated datePublished" datetime="2018-07-06T00:00:00+08:00">2018-07-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E4%BD%9C%E6%97%A5%E5%BF%97/" itemprop="url" rel="index"><span itemprop="name">工作日志</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>我们在项目中，往往会遇到两个 Navigation Bar 样式不同的问题，如果直接用苹果官方的控件，会出现各种各样的 bug，因为苹果官方的 Navigation Bar 是共用的，所以在两个不同样式的 Navigation Bar 中做转场操作的时候就会出现各种问题。</p>
+<p>今天我们就用 Method Swizzling 的方式来修改一下系统的 Navigation Bar 转场时的样式，最终效果如下图所示：</p>
+<p><img src="/my_pictures/NavigationBar%E4%B8%8D%E5%90%8C%E9%A2%9C%E8%89%B2%E6%97%B6%E7%9A%84%E8%BD%AC%E5%9C%BA-1.gif"></p>
+<h3 id="设置导航栏的背景颜色"><a href="#设置导航栏的背景颜色" class="headerlink" title="设置导航栏的背景颜色"></a>设置导航栏的背景颜色</h3><hr>
+<p>我们来为 <code>UIViewController</code> 添加一个扩展，用于存储与设置 <code>Navigation Bar</code> 各种属性。首先，我们来为我们的 <code>UIViewController</code> 添加一个 <code>navBarBgColor</code> 的计算属性。<br>这里运用了 <code>runtime</code> 的关联方法 <code>objc_getAssociatedObject:</code> 和 <code>objc_setAssociatedObject:</code> 来存取所设置的背景颜色。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UIViewController</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 设置导航栏的背景颜色</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">var</span> navBarBgColor: <span class="type">UIColor</span> &#123;</span><br><span class="line">		<span class="keyword">get</span> &#123;</span><br><span class="line">		    <span class="keyword">if</span> <span class="keyword">let</span> color = objc_getAssociatedObject(<span class="keyword">self</span>, &amp;<span class="type">DefaultValue</span>.navBarBgColor) <span class="keyword">as</span>? <span class="type">UIColor</span> &#123;</span><br><span class="line">		        <span class="keyword">return</span> color</span><br><span class="line">		    &#125;</span><br><span class="line">		    <span class="keyword">return</span> <span class="type">DefaultValue</span>.navBarBgColor</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">set</span> &#123;</span><br><span class="line">		    objc_setAssociatedObject(<span class="keyword">self</span>, &amp;<span class="type">DefaultValue</span>.navBarBgColor, newValue, .<span class="type">OBJC_ASSOCIATION_RETAIN_NONATOMIC</span>)</span><br><span class="line">		    navigationController?.navBarBackgroundColor(newValue)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>这时我们就可以存储与设置导航栏的背景色了。</p>
+<p>然后我们再为 <code>NavigationController</code> 添加一个扩展，用来调用 <code>Navigationbar</code> 的具体设置方法。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UINavigationController</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 设置背景色</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="function"><span class="keyword">func</span> <span class="title">navBarBackgroundColor</span><span class="params">(<span class="keyword">_</span> color: UIColor)</span></span> &#123;</span><br><span class="line">        navigationBar.backgroundColor(color)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后我们在扩展 <code>Navigationbar</code>，添加具体的设置逻辑。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UINavigationBar</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// 导航栏背景视图</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> backgroundView: <span class="type">UIView?</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> bgView = objc_getAssociatedObject(<span class="keyword">self</span>, &amp;<span class="type">DefaultValue</span>.backgroundView) <span class="keyword">as</span>? <span class="type">UIView</span> <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> bgView</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">set</span> &#123;</span><br><span class="line">            objc_setAssociatedObject(<span class="keyword">self</span>, &amp;<span class="type">DefaultValue</span>.backgroundView, newValue, .<span class="type">OBJC_ASSOCIATION_RETAIN_NONATOMIC</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// 设置导航栏背景色</span></span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="function"><span class="keyword">func</span> <span class="title">backgroundColor</span><span class="params">(<span class="keyword">_</span> color: UIColor)</span></span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> backgroundView == <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="comment">// 添加一个透明背景的 image 到 _UIBarBackground</span></span><br><span class="line">            setBackgroundImage(<span class="type">UIImage</span>(), <span class="keyword">for</span>: .<span class="keyword">default</span>)</span><br><span class="line">            <span class="keyword">let</span> height = <span class="type">DeviceInfo</span>.deviceName == .iPhoneX ? <span class="number">64</span> : <span class="number">88</span></span><br><span class="line">            backgroundView = <span class="type">UIView</span>(frame: <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>, width: <span class="type">Int</span>(bounds.width), height: height))</span><br><span class="line">            backgroundView?.autoresizingMask = .flexibleWidth</span><br><span class="line">            <span class="comment">// _UIBarBackground 是 navigationBar 的第一个子视图</span></span><br><span class="line">            subviews.first?.insertSubview(backgroundView ?? <span class="type">UIView</span>(), at: <span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        backgroundView?.backgroundColor = color</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们是直接插入一个 <code>View</code> 到 <code>NavigationBar</code> 的 <code>_UIBarBackground </code> 中，我们直接在这个 <code>View</code> 上面修改颜色即可。至此，设置 <code>NavigationBar</code> 的背景色告一段落，下来我们来看看转场如何做到颜色的均匀过度。</p>
+<h3 id="颜色过度-runtime"><a href="#颜色过度-runtime" class="headerlink" title="颜色过度 - runtime"></a>颜色过度 - runtime</h3><hr>
+<p>要想做到在右滑进行 <code>pop</code> 操作的时候导航栏颜色均匀的过度需要替换一个系统方法 <code>_updateInteractiveTransition:</code>，这个方法是用来监听手势的返回进度的，我们可以在这个方法中计算每一个进度时候导航栏颜色的变化。</p>
+<p>大家都知道，在 <code>Objective-C</code> 中进行 <code>Method Swizzling</code> 的时候都需要将替换逻辑放在 <code>dispatch_once</code> 中去执行，保证其执行一次。在 Swift 中，现在已经去掉了 <code>dispatch_once</code> 方法，那么我们应该如何做呢？</p>
+<p>苹果文档说道，声明为 <code>static let</code> 和 <code>lazy</code> 的变量具有 <code>dispatch_once</code> 的效果。所以我们就可以用更加 Swift 的方式去实现自己的逻辑，不需要去再造一个 <code>dispatch_once</code> 出来。代码如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Swift 中 static let 具备 dispatch once 特性，所以可以用这种方式声明，</span></span><br><span class="line"><span class="comment"> * 闭包的形式声明一个代码块，默认是懒加载</span></span><br><span class="line"><span class="comment"> * 类似于 Objective-c 中的 dispatch once</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">let</span> swizzle: () = &#123;</span><br><span class="line">    <span class="keyword">let</span> needSwizzleSelectorAry = [</span><br><span class="line">        <span class="type">NSSelectorFromString</span>(<span class="string">&quot;_updateInteractiveTransition:&quot;</span>),</span><br><span class="line">        <span class="keyword">#selector</span>(popToViewController(<span class="keyword">_</span>:animated:)),</span><br><span class="line">        <span class="keyword">#selector</span>(popToRootViewController(animated:))</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">let</span> swizzleSelectorAry = [</span><br><span class="line">        <span class="keyword">#selector</span>(em_updateInteractiveTransition(<span class="keyword">_</span>:)),</span><br><span class="line">        <span class="keyword">#selector</span>(em_popToViewController(<span class="keyword">_</span>:animated:)),</span><br><span class="line">        <span class="keyword">#selector</span>(em_popToRootViewControllerAnimated(<span class="keyword">_</span>:))</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">for</span> sel <span class="keyword">in</span> needSwizzleSelectorAry &#123;</span><br><span class="line">        <span class="keyword">let</span> str = (<span class="string">&quot;em_&quot;</span> + sel.description).replacingOccurrences(of: <span class="string">&quot;__&quot;</span>, with: <span class="string">&quot;_&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> originMethod = class_getInstanceMethod(<span class="type">UINavigationController</span>.<span class="keyword">self</span>, sel),</span><br><span class="line">            <span class="keyword">let</span> swizzleMethod = class_getInstanceMethod(<span class="type">UINavigationController</span>.<span class="keyword">self</span>, <span class="type">Selector</span>(str)) &#123;</span><br><span class="line">            </span><br><span class="line">            method_exchangeImplementations(originMethod, swizzleMethod)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以实现 <code>dispatch_once</code> 的效果。</p>
+<p>接下来又是一个棘手的问题，Swift 中已经没有了 <code>+load</code> 方法怎么办，甚至 Swift 3.1 之后 <code>+initialize</code> 方法都已经不能用了。这可如何是好。经过 Google，发现了一个替代的方案，用 Swift 的协议来进行实现：<a target="_blank" rel="noopener" href="http://jordansmith.io/handling-the-deprecation-of-initialize/">Handling the Deprecation of initialize()</a></p>
+<p>JORDAN SMITH 想法其实很简单，是通过 <code>runtime</code> 获取到所有类的列表，然后向所有遵循 <code>SelfAware</code> 协议的类发送消息，并且他把这些操作放到了 <code>UIApplication</code> 的 <code>next</code> 属性的调用中，同时发现了 <code>next</code> 属性会在 <code>applicationDidFinishLaunching</code> 之前被调用。 </p>
+<p>代码如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">protocol</span> <span class="title">SelfAware</span>: <span class="title">class</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">awake</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">NothingToSeeHere</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">harmlessFunction</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">let</span> typeCount = <span class="type">Int</span>(objc_getClassList(<span class="literal">nil</span>, <span class="number">0</span>))</span><br><span class="line">        <span class="keyword">let</span> types = <span class="type">UnsafeMutablePointer</span>&lt;<span class="type">AnyClass?</span>&gt;.allocate(capacity: typeCount)</span><br><span class="line">        <span class="keyword">let</span> autoreleasingTypes = <span class="type">AutoreleasingUnsafeMutablePointer</span>&lt;<span class="type">AnyClass</span>&gt;(types)</span><br><span class="line">        objc_getClassList(autoreleasingTypes, <span class="type">Int32</span>(typeCount))</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="number">0</span>..&lt;typeCount &#123; (types[index] <span class="keyword">as</span>? <span class="type">SelfAware</span>.<span class="type">Type</span>)?.awake() &#125;</span><br><span class="line">        types.deallocate()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UIApplication</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// 启动只执行一次</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">let</span> runOnce: <span class="type">Void</span> = &#123;</span><br><span class="line">        <span class="type">NothingToSeeHere</span>.harmlessFunction()</span><br><span class="line">    &#125;()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">open</span> <span class="keyword">var</span> next: <span class="type">UIResponder?</span> &#123;</span><br><span class="line">        <span class="comment">/// Called before applicationDidFinishLaunching</span></span><br><span class="line">        <span class="type">UIApplication</span>.runOnce</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.next</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在别人的帮助下，我们也算是优雅的实现了需要的功能，我们将 <code>swizzle</code> 方法放在 <code>awake()</code> 中去执行。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UINavigationController</span>: <span class="title">SelfAware</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">awake</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">/// 判断是否是其子类</span></span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">self</span> !== <span class="type">UINavigationController</span>.<span class="keyword">self</span> <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">        <span class="keyword">self</span>.swizzle</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="计算颜色的过度"><a href="#计算颜色的过度" class="headerlink" title="计算颜色的过度"></a>计算颜色的过度</h3><hr>
+<p>接下来我们需要一个方法来计算颜色的过度：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算颜色的过度</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">averageColor</span><span class="params">(fromColor: UIColor, toColor: UIColor, percent: CGFloat)</span></span> -&gt; <span class="type">UIColor</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> fromRed: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> fromGreen: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> fromBlue: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> fromAlpha: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    fromColor.getRed(&amp;fromRed, green: &amp;fromGreen, blue: &amp;fromBlue, alpha: &amp;fromAlpha)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> toRed: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> toGreen: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> toBlue: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> toAlpha: <span class="type">CGFloat</span> = <span class="number">0</span></span><br><span class="line">    toColor.getRed(&amp;toRed, green: &amp;toGreen, blue: &amp;toBlue, alpha: &amp;toAlpha)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> nowRed = fromRed + (toRed - fromRed) * percent</span><br><span class="line">    <span class="keyword">let</span> nowGreen = fromGreen + (toGreen - fromGreen) * percent</span><br><span class="line">    <span class="keyword">let</span> nowBlue = fromBlue + (toBlue - fromBlue) * percent</span><br><span class="line">    <span class="keyword">let</span> nowAlpha = fromAlpha + (toAlpha - fromAlpha) * percent</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="type">UIColor</span>(red: nowRed, green: nowGreen, blue: nowBlue, alpha: nowAlpha)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现我们自己的 <code>_updateInteractiveTransition:</code> 方法。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 用于替换系统的 _updateInteractiveTransition: 方法，监听返回手势进度</span></span><br><span class="line"><span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">em_updateInteractiveTransition</span><span class="params">(<span class="keyword">_</span> percentComplete: CGFloat)</span></span> &#123;</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">self</span>.isKind(of: <span class="type">EMNavigationController</span>.<span class="keyword">self</span>) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    <span class="keyword">let</span> topVC = <span class="keyword">self</span>.topViewController</span><br><span class="line">    <span class="comment">/// transitionCoordinator 带有两个 VC 的转场上下文</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> coor = topVC?.transitionCoordinator,</span><br><span class="line">        <span class="keyword">let</span> fromVC = coor.viewController(forKey: .from) <span class="keyword">as</span>? <span class="type">EMViewController</span>,</span><br><span class="line">        <span class="keyword">let</span> toVC = coor.viewController(forKey: .to) <span class="keyword">as</span>? <span class="type">EMViewController</span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> fromAlpha = fromVC.navBarBgAlpha</span><br><span class="line">        <span class="keyword">let</span> toAlpha = toVC.navBarBgAlpha</span><br><span class="line">        <span class="keyword">let</span> nowAlpha = fromAlpha + (toAlpha - fromAlpha) * percentComplete</span><br><span class="line">        <span class="keyword">self</span>.navBarBackgroundAlpha(nowAlpha)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> fromTintColor = fromVC.navBarTintColor</span><br><span class="line">        <span class="keyword">let</span> toTintColor = toVC.navBarTintColor</span><br><span class="line">        <span class="keyword">let</span> nowTintColor = averageColor(fromColor: fromTintColor, toColor: toTintColor, percent: percentComplete)</span><br><span class="line">        <span class="keyword">self</span>.navBarTintColor(nowTintColor)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> fromColor = fromVC.navBarBgColor</span><br><span class="line">        <span class="keyword">let</span> toColor = toVC.navBarBgColor</span><br><span class="line">        <span class="keyword">let</span> nowColor = averageColor(fromColor: fromColor, toColor: toColor, percent: percentComplete)</span><br><span class="line">        <span class="keyword">self</span>.navBarBackgroundColor(nowColor)</span><br><span class="line">    &#125;</span><br><span class="line">    em_updateInteractiveTransition(percentComplete)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们的过度效果算是搞定一半，还有另外一半就是处理手势取消了。我们需要在 <code>navigationBar:shouldPopItem:</code> 方法中来处理我们的手势取消操作。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UINavigationController</span>: <span class="title">UINavigationBarDelegate</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// pop</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">navigationBar</span><span class="params">(<span class="keyword">_</span> navigationBar: UINavigationBar,</span></span></span><br><span class="line"><span class="function"><span class="params">                              shouldPop item: UINavigationItem)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> topVC = topViewController,</span><br><span class="line">            <span class="keyword">let</span> coor = topVC.transitionCoordinator,</span><br><span class="line">            coor.initiallyInteractive &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">#available</span>(iOS <span class="number">10.0</span>, *) &#123;</span><br><span class="line">                coor.notifyWhenInteractionChanges(&#123; (context) <span class="keyword">in</span></span><br><span class="line">                    <span class="keyword">self</span>.dealInteractionChanges(context)</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                coor.notifyWhenInteractionEnds(&#123; (context) <span class="keyword">in</span></span><br><span class="line">                    <span class="keyword">self</span>.dealInteractionChanges(context)</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> itemCount = navigationBar.items?.<span class="built_in">count</span> ?? <span class="number">0</span></span><br><span class="line">        <span class="keyword">let</span> n = viewControllers.<span class="built_in">count</span> &gt;= itemCount ? <span class="number">2</span> : <span class="number">1</span></span><br><span class="line">        <span class="keyword">let</span> popToVC = viewControllers[viewControllers.<span class="built_in">count</span> - n]</span><br><span class="line">        </span><br><span class="line">        popToViewController(popToVC, animated: <span class="literal">true</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// 处理返回手势中断的情况</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">dealInteractionChanges</span><span class="params">(<span class="keyword">_</span> context: UIViewControllerTransitionCoordinatorContext)</span></span> &#123;</span><br><span class="line">        <span class="comment">/// 设置动画</span></span><br><span class="line">        <span class="keyword">let</span> animations: (<span class="type">UITransitionContextViewControllerKey</span>) -&gt; () = &#123; [<span class="keyword">weak</span> <span class="keyword">self</span>] <span class="keyword">in</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> vc = context.viewController(forKey: $<span class="number">0</span>) <span class="keyword">as</span>? <span class="type">EMViewController</span> &#123;</span><br><span class="line">                <span class="keyword">self</span>?.updateAllStyle(vc)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> context.isCancelled &#123;</span><br><span class="line">            <span class="comment">/// 手势取消</span></span><br><span class="line">            <span class="keyword">let</span> cancelDuration: <span class="type">TimeInterval</span> = context.transitionDuration * <span class="type">Double</span>(context.percentComplete)</span><br><span class="line">            <span class="type">UIView</span>.animate(withDuration: cancelDuration) &#123;</span><br><span class="line">                animations(.from)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/// 手势完成</span></span><br><span class="line">            <span class="keyword">let</span> finishDuration: <span class="type">TimeInterval</span> = context.transitionDuration * <span class="type">Double</span>(<span class="number">1</span> - context.percentComplete)</span><br><span class="line">            <span class="type">UIView</span>.animate(withDuration: finishDuration) &#123;</span><br><span class="line">                animations(.to)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在，我们的导航栏过度效果基本完成，还有一些其他的细节处理，请看我的 <a target="_blank" rel="noopener" href="https://github.com/TomatosX/EMNavigationBarTransition">GitHub</a> 源码吧。</p>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://blog.leanote.com/post/yaoli/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E5%9C%B0%E5%9C%A8Swift4%E4%B8%AD%E5%AE%9E%E7%8E%B0Method-Swizzling">如何优雅地在Swift4中实现Method Swizzling</a></li>
+<li><a target="_blank" rel="noopener" href="http://jordansmith.io/handling-the-deprecation-of-initialize/">Handling the Deprecation of initialize()</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/42824541/swift-3-1-deprecates-initialize-how-can-i-achieve-the-same-thing#comment73341029_42824542">Swift 3.1 deprecates initialize(). How can I achieve the same thing?</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/37801407/whither-dispatch-once-in-swift-3">Whither dispatch_once in Swift 3?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/454b06590cf1">导航栏的平滑显示和隐藏 - 个人页的自我修养（1）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/540a7e6f7b40">超简单！！！ iOS设置状态栏、导航栏按钮、标题、颜色、透明度，偏移等</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/29/2018-06-29-iOS%20%E9%85%8D%E7%BD%AE%E6%B5%8B%E8%AF%95%E7%94%A8%E6%8E%A8%E9%80%81%E9%80%9A%E7%9F%A5%E8%AF%81%E4%B9%A6/" rel="prev" title="iOS 配置测试用推送通知证书">
+                  <i class="fa fa-chevron-left"></i> iOS 配置测试用推送通知证书
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/07/07/2018-07-07-iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91/" rel="next" title="iOS 11 中 UIRefreshControll 消失【译】">
+                  iOS 11 中 UIRefreshControll 消失【译】 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : 'a19b99826fb73f70d74e21ca2468f3c1',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

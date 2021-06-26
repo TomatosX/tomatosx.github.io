@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="之前我一直以为，Swift是一门弱类型的语言。 判断依据：  Swift 变量不强制的指定类型，而是用 var 和 let 表示可变与不可变。所以，Swift是一门弱类型的语言。    但是，看了一下强弱类型的时候，才恍然大悟。其实 var 和 let 的特性，只是说明Swift是一门动态类型的语言。并不能指出是否是强或弱类型。 一些定义：  静态类型语言：是一种编译器无法自动检测类型的语言。 动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift是一门动态类型的强类型语言">
+<meta property="og:url" content="http://example.com/2018/02/26/2018-02-26-Swift%E6%98%AF%E4%B8%80%E9%97%A8%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E7%B1%BB%E5%9E%8B%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="之前我一直以为，Swift是一门弱类型的语言。 判断依据：  Swift 变量不强制的指定类型，而是用 var 和 let 表示可变与不可变。所以，Swift是一门弱类型的语言。    但是，看了一下强弱类型的时候，才恍然大悟。其实 var 和 let 的特性，只是说明Swift是一门动态类型的语言。并不能指出是否是强或弱类型。 一些定义：  静态类型语言：是一种编译器无法自动检测类型的语言。 动">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.871Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift专题">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/02/26/2018-02-26-Swift%E6%98%AF%E4%B8%80%E9%97%A8%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E7%B1%BB%E5%9E%8B%E8%AF%AD%E8%A8%80/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swift是一门动态类型的强类型语言 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/02/26/2018-02-26-Swift%E6%98%AF%E4%B8%80%E9%97%A8%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E7%B1%BB%E5%9E%8B%E8%AF%AD%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift是一门动态类型的强类型语言
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-26 00:00:00" itemprop="dateCreated datePublished" datetime="2018-02-26T00:00:00+08:00">2018-02-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>之前我一直以为，Swift是一门弱类型的语言。</p>
+<p>判断依据：</p>
+<blockquote>
+<p>Swift 变量不强制的指定类型，而是用 <code>var</code> 和 <code>let</code> 表示可变与不可变。所以，Swift是一门弱类型的语言。  </p>
+</blockquote>
+<p>但是，看了一下强弱类型的时候，才恍然大悟。其实 <code>var</code> 和 <code>let</code> 的特性，只是说明Swift是一门动态类型的语言。并不能指出是否是强或弱类型。</p>
+<p>一些定义：</p>
+<ul>
+<li>静态类型语言：是一种编译器无法自动检测类型的语言。</li>
+<li>动态类型语言：是一种编译器能够自动检测类型的语言。</li>
+<li>强类型语言：强类型语言也称为强类型定义语言。是一种总是强制类型定义的语言，要求变量的使用要严格符合定义，所有变量都必须先定义后使用。</li>
+<li>弱类型语言：弱类型语言也称为弱类型定义语言。与强类型定义相反。像vb，php，js等就属于弱类型语言。</li>
+</ul>
+<a id="more"></a>
+
+<p>光看定义不够生动，还是来举个例子：</p>
+<p>Java是一种静态类型语言，也是一种强类型语言。因为编译器不能自动检测类型，所以它是静态的，而且类型受到严格限制，所以它也是一种强类型语言。</p>
+<p>javascript是一种动态类型语言和非强类型语言。<br>因为编译器能够在运行时检测类型，并且类型也不受严格限制。</p>
+<p>所以，基于上面的例子，你可以说swift允许我们不声明类型并且让编译器自己检测类型，所以swift被Apple官方公布为动态类型语言。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> num = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>这里没有强制声明类型，看似一个弱类型的语言，其实不然。Swift 编译器能够推断出 <code>num</code> 是 <code>Int</code> 类型。那么 <code>num</code> 就不能再被赋值为 <code>String</code> 类型。更不能写成如下的形式：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> num = <span class="number">1</span></span><br><span class="line"><span class="keyword">let</span> str = <span class="string">&quot;2&quot;</span></span><br><span class="line"><span class="keyword">let</span> result = num + str</span><br></pre></td></tr></table></figure>
+
+<p>编译器将会报如下的错误：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">error: binary <span class="keyword">operator</span> &#x27;+&#x27; cannot be applied to operands of type &#x27;<span class="type">Int&#x27;</span> and &#x27;<span class="type">String&#x27;</span></span><br><span class="line"><span class="keyword">let</span> result = num + str</span><br><span class="line">             ~~~ ^ ~~~</span><br><span class="line">note: overloads <span class="keyword">for</span> &#x27;+&#x27; exist with these partially matching parameter lists: (<span class="type">Int</span>, <span class="type">Int</span>), (<span class="type">String</span>, <span class="type">String</span>), (<span class="type">Int</span>, <span class="type">UnsafeMutablePointer</span>&lt;<span class="type">Pointee</span>&gt;), (<span class="type">Int</span>, <span class="type">UnsafePointer</span>&lt;<span class="type">Pointee</span>&gt;)</span><br><span class="line"><span class="keyword">let</span> result = num + str</span><br><span class="line">                 ^</span><br></pre></td></tr></table></figure>
+
+<p>这说明了，Swift 是一门强类型的语言。Swift 的类型声明，你可以看成是在定义变量的时候，隐式声明的（由编译器推断出），当然也可以显式的声明。如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> num: <span class="type">Int</span> = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://sandeshsardar.com/2017/06/29/swift-is-dynamic-and-strong-type-language/">Swift is Dynamic and strong type language</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ac99366112f5">关于 Swift 的 5 个误区</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift%E4%B8%93%E9%A2%98/" rel="tag"># Swift专题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/25/2018-02-25-%E4%BF%AE%E6%94%B9%20VPS%20%E7%9A%84%20SSH%20%E7%AB%AF%E5%8F%A3/" rel="prev" title="修改 VPS 的 SSH 端口">
+                  <i class="fa fa-chevron-left"></i> 修改 VPS 的 SSH 端口
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/27/2018-02-27-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B8%80%E3%80%91%E5%86%85%E5%BB%BA%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B/" rel="next" title="Swift 进阶【一】内建集合类型">
+                  Swift 进阶【一】内建集合类型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : '1632a6b59e1d48d50075e515fa3595ea',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

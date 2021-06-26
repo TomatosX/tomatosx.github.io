@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="在将项目迁移到 Swift 3.1 后，我受到了几个警告的欢迎。它们似乎都没有特别难以修复，只是除了这个之外：  Method ‘initialize()’ defines Objective-C class method ‘initialize’, which is not guaranteed to be invoked by Swift and will be disallowed in f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="处理 initialize() 的弃用【译】">
+<meta property="og:url" content="http://example.com/2018/07/08/2018-07-08-%E5%A4%84%E7%90%86%20initialize()%20%E7%9A%84%E5%BC%83%E7%94%A8%E3%80%90%E8%AF%91%E3%80%91/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="在将项目迁移到 Swift 3.1 后，我受到了几个警告的欢迎。它们似乎都没有特别难以修复，只是除了这个之外：  Method ‘initialize()’ defines Objective-C class method ‘initialize’, which is not guaranteed to be invoked by Swift and will be disallowed in f">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.884Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="Swift">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/07/08/2018-07-08-%E5%A4%84%E7%90%86%20initialize()%20%E7%9A%84%E5%BC%83%E7%94%A8%E3%80%90%E8%AF%91%E3%80%91/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>处理 initialize() 的弃用【译】 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8-initialize-%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">为什么用 initialize()？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">一个简单的解决方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%B8%8D%E9%82%A3%E4%B9%88%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">一个不那么简单的解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E6%96%87%E5%9C%B0%E5%9D%80"><span class="nav-number">4.</span> <span class="nav-text">原文地址</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/08/2018-07-08-%E5%A4%84%E7%90%86%20initialize()%20%E7%9A%84%E5%BC%83%E7%94%A8%E3%80%90%E8%AF%91%E3%80%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          处理 initialize() 的弃用【译】
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-07-08 00:00:00" itemprop="dateCreated datePublished" datetime="2018-07-08T00:00:00+08:00">2018-07-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%96%87%E7%AB%A0%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">文章翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在将项目迁移到 Swift 3.1 后，我受到了几个警告的欢迎。它们似乎都没有特别难以修复，只是除了这个之外：</p>
+<blockquote>
+<p>Method ‘initialize()’ defines Objective-C class method ‘initialize’, which is not guaranteed to be invoked by Swift and will be disallowed in future versions.</p>
+</blockquote>
+<p>Ouch。一些类重写了 <code>NSObject</code> 的 <code>initialize()</code> 函数，警告清楚地表明这已不在合适（或者至少，但它应该不会很快发生）。一个非常类似的方法 - <code>load()</code>，它自 Swift 1.2 以来一直没有，所以看起来初始化将很快跟进。它扮演着一个独特的角色，如 <code>NSObject</code> <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize">文档</a>所述：</p>
+<blockquote>
+<p>The runtime sends <code>initialize()</code> to each class in a program just before the class, or any class that inherits from it, is sent its first message from within the program.</p>
+</blockquote>
+<a id="more"></a>
+
+<h3 id="为什么用-initialize-？"><a href="#为什么用-initialize-？" class="headerlink" title="为什么用 initialize()？"></a>为什么用 <code>initialize()</code>？</h3><hr>
+<p>如果你处于相同的情况，首先要问的问题可能是“我真的需要这个吗？”。如果你不需要的话，将逻辑移到其他地方，省去麻烦，并调用它。您通常是不需要它提供的行为的，但是自从 Swift 1.2 以后就不再支持 <code>load()</code>了，也没有任何明显的其他选择。在我的例子中，<code>initialize()</code> 被用作 <a target="_blank" rel="noopener" href="http://nshipster.com/swift-objc-runtime/"><code>method swizzling</code></a> 的入口点（可能是 <code>initialize()</code> 的最常用的用例了）。Swizzling 允许我修补 iOS 中导致多次崩溃的错误。如果你从未听说过 <code>method swizzling</code>，请不要强迫自己…我只建议在特殊情况下使用它。</p>
+<h3 id="一个简单的解决方式"><a href="#一个简单的解决方式" class="headerlink" title="一个简单的解决方式"></a>一个简单的解决方式</h3><hr>
+<p>在考虑到这一点之前，<code>load()</code>和 <code>initialize()</code> 的一个简单替代方法是从应用程序执行你的逻辑<code>application(_:didFinishLaunchingWithOptions:)</code>。我建议保留相关类中包含的逻辑，并从 <code>application delegate</code> 中获取。从功能上讲，这个解决方案比 <code>initialize()</code> 更类似于 <code>load()</code>，但在大多数情况下，这是完全足够的。</p>
+<p>这是相当直接的一种解决方式，在大多数情况下，为了简单起见，我建议这么做。但是，有一两个小警告。您可能有很多类要执行此操作，因此从应用程序委托中执行此操作会有点笨拙。也许您无权访问应用程序委托，或者您可能希望解决方案看起来比当前建议更具结构性。</p>
+<h3 id="一个不那么简单的解决方案"><a href="#一个不那么简单的解决方案" class="headerlink" title="一个不那么简单的解决方案"></a>一个不那么简单的解决方案</h3><hr>
+<p>以下功能也比 <code>initialize()</code> 更接近 <code>load()</code>。目标是为类定义一种简单的方法来采用一个函数，并在使用该类之前调用​​该函数。虽然内部不那么简单，但它可以很好地扩展，并且是完全自包含的 - 否定了向应用程序委托添加代码的任何要求。</p>
+<p>首先，定义以下 Swift 代码。目的是为任何您想要类似初始化行为的类提供一个简单的入口点 - 现在可以通过符合 <code>SelfAware</code> 协议来完成。它还提供单个函数来为每个符合要求的类启动此行为。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">SelfAware</span>: <span class="title">class</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">awake</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NothingToSeeHere</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">harmlessFunction</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> typeCount = <span class="type">Int</span>(objc_getClassList(<span class="literal">nil</span>, <span class="number">0</span>))</span><br><span class="line">        <span class="keyword">let</span> types = <span class="type">UnsafeMutablePointer</span>&lt;<span class="type">AnyClass?</span>&gt;.allocate(capacity: typeCount)</span><br><span class="line">        <span class="keyword">let</span> safeTypes = <span class="type">AutoreleasingUnsafeMutablePointer</span>&lt;<span class="type">AnyClass?</span>&gt;(types)</span><br><span class="line">        objc_getClassList(safeTypes, <span class="type">Int32</span>(typeCount))</span><br><span class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> <span class="number">0</span> ..&lt; typeCount &#123; (types[index] <span class="keyword">as</span>? <span class="type">SelfAware</span>.<span class="type">Type</span>)?.awake() &#125;</span><br><span class="line">        types.deallocate(capacity: typeCount)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们仍然需要一种方法来运行我们定义的函数，即 <code>NothingToSeeHere.harmlessFunction()</code>，在应用程序启动时。您可以从应用程序委托调用此方法，但如果您希望确保解决方案是自包含的，则以下提供了一种为 iOS 执行此操作的方法。对于没有 <code>UIApplication</code> 的 macOS 或其他平台，将需要以下变体。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UIApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">let</span> runOnce: <span class="type">Void</span> = &#123;</span><br><span class="line">        <span class="type">NothingToSeeHere</span>.harmlessFunction()</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">open</span> <span class="keyword">var</span> next: <span class="type">UIResponder?</span> &#123;</span><br><span class="line">        <span class="comment">// Called before applicationDidFinishLaunching</span></span><br><span class="line">        <span class="type">UIApplication</span>.runOnce</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用此代码，符合协议 <code>SelfAware</code> 将授予任何类所需的行为。这样做相当容易和结构化，所以虽然这个解决方案的内部工作“不那么简单”，但我们现在有一个非常简洁的方法来向任何类添加类似初始化的行为。</p>
+<h3 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h3><hr>
+<p><a target="_blank" rel="noopener" href="http://jordansmith.io/handling-the-deprecation-of-initialize/">Handling the Deprecation of initialize()</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag"># 翻译</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/07/07/2018-07-07-iOS11%E4%B8%ADUIRefreshControll%E6%B6%88%E5%A4%B1%E3%80%90%E8%AF%91%E3%80%91/" rel="prev" title="iOS 11 中 UIRefreshControll 消失【译】">
+                  <i class="fa fa-chevron-left"></i> iOS 11 中 UIRefreshControll 消失【译】
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/07/14/2018-07-14-WKWebView%E4%B8%AD%E6%B3%A8%E5%85%A5cookie/" rel="next" title="WKWebView 中注入 cookie">
+                  WKWebView 中注入 cookie <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : '10a0eb287c2c8270e5faa20176ef0487',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

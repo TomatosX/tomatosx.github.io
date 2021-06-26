@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="由于项目原来的设计，导致在OS X 10.10之后的系统上会出现一些奇怪的Bug，调用- addSubview:positioned:relativeTo:方法却并没有实现将视图放在最上层。经过不断的查找，才知道，子视图的父视图并没有被显示出来，导致了- addSubview:positioned:relativeTo:方法不起作用。那么如果将父视图显示出来的话，window button（关闭">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义OS X的window button">
+<meta property="og:url" content="http://example.com/2018/02/08/2018-02-08-%E8%87%AA%E5%AE%9A%E4%B9%89OS%20X%E7%9A%84window%20button/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="由于项目原来的设计，导致在OS X 10.10之后的系统上会出现一些奇怪的Bug，调用- addSubview:positioned:relativeTo:方法却并没有实现将视图放在最上层。经过不断的查找，才知道，子视图的父视图并没有被显示出来，导致了- addSubview:positioned:relativeTo:方法不起作用。那么如果将父视图显示出来的话，window button（关闭">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.869Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="macOS工作日志">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/02/08/2018-02-08-%E8%87%AA%E5%AE%9A%E4%B9%89OS%20X%E7%9A%84window%20button/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>自定义OS X的window button | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B9%8B%E5%89%8D%E4%B8%80%E5%AE%9A%E8%A6%81%E5%B0%86%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E7%9A%84%E6%8C%89%E9%92%AE%E5%85%B3%E9%97%AD"><span class="nav-number">1.</span> <span class="nav-text">在自定义之前一定要将系统自动创建的按钮关闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A6%E4%B8%8A%E8%A7%92%E7%9A%84%E4%B8%89%E4%B8%AA%E6%8E%A7%E5%88%B6%E6%8C%89%E9%92%AE"><span class="nav-number">2.</span> <span class="nav-text">自定义左上角的三个控制按钮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B910-10%E4%B9%8B%E5%89%8D%E7%9A%84%E6%8C%89%E9%92%AE%E9%9C%80%E8%A6%81%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%8F%E6%8C%89%E9%92%AE%EF%BC%88NSWindowFullScreenButton%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">兼容10.10之前的按钮需要实现自定义全屏按钮（NSWindowFullScreenButton）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/02/08/2018-02-08-%E8%87%AA%E5%AE%9A%E4%B9%89OS%20X%E7%9A%84window%20button/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自定义OS X的window button
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-08 00:00:00" itemprop="dateCreated datePublished" datetime="2018-02-08T00:00:00+08:00">2018-02-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E4%BD%9C%E6%97%A5%E5%BF%97/" itemprop="url" rel="index"><span itemprop="name">工作日志</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>由于项目原来的设计，导致在OS X 10.10之后的系统上会出现一些奇怪的Bug，调用<code>- addSubview:positioned:relativeTo:</code>方法却并没有实现将视图放在最上层。经过不断的查找，才知道，子视图的父视图并没有被显示出来，导致了<code>- addSubview:positioned:relativeTo:</code>方法不起作用。那么如果将父视图显示出来的话，window button（关闭按钮，最小化按钮，全屏按钮，最大化窗口按钮）又会被遮盖掉，无奈，需要自定义window button。</p>
+</blockquote>
+<h3 id="在自定义之前一定要将系统自动创建的按钮关闭"><a href="#在自定义之前一定要将系统自动创建的按钮关闭" class="headerlink" title="在自定义之前一定要将系统自动创建的按钮关闭"></a>在自定义之前一定要将系统自动创建的按钮关闭</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[[<span class="keyword">self</span>.window standardWindowButton:<span class="built_in">NSWindowCloseButton</span>] setEnabled:<span class="literal">NO</span>];</span><br><span class="line">[[<span class="keyword">self</span>.window standardWindowButton:<span class="built_in">NSWindowMiniaturizeButton</span>] setEnabled:<span class="literal">NO</span>];</span><br><span class="line">[[<span class="keyword">self</span>.window standardWindowButton:<span class="built_in">NSWindowFullScreenButton</span>] setEnabled:<span class="literal">NO</span>];</span><br><span class="line">[[<span class="keyword">self</span>.window standardWindowButton:<span class="built_in">NSWindowZoomButton</span>] setEnabled:<span class="literal">NO</span>];</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="自定义左上角的三个控制按钮"><a href="#自定义左上角的三个控制按钮" class="headerlink" title="自定义左上角的三个控制按钮"></a>自定义左上角的三个控制按钮</h3><p>这里我是将三个按钮写到了一个自定义View中，方便布局用。</p>
+<p>首先是头文件中声明：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Cocoa/Cocoa.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CustomWindowButtonView</span> : <span class="title">NSView</span> </span>&#123;</span><br><span class="line"><span class="keyword">@private</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">BOOL</span> mouseInside_;</span><br><span class="line">    <span class="built_in">NSButton</span> *closeButton_;</span><br><span class="line">    <span class="built_in">NSButton</span> *minitButton_;</span><br><span class="line">    <span class="built_in">NSButton</span> *zoomButton_;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> mouseInside;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) <span class="built_in">NSButton</span> *closeButton;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) <span class="built_in">NSButton</span> *minitButton;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) <span class="built_in">NSButton</span> *zoomButton;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>mouseInside参数是用于判断鼠标是否在视图之中。</p>
+<p>创建一个window button所用到的方法是<code>+ standardWindowButton:forStyleMask:</code><br>文档中相关说明：</p>
+<blockquote>
+<p>Returns a new instance of a given standard window button, sized appropriately for a given window style.</p>
+</blockquote>
+<p>这里说明了，此方法是返回一个标准的window button实例，并且会设置合适的window style。<br><code>NSWindowButton</code>取值如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">   <span class="built_in">NSWindowCloseButton</span>,</span><br><span class="line">   <span class="built_in">NSWindowMiniaturizeButton</span>,</span><br><span class="line">   <span class="built_in">NSWindowZoomButton</span>,</span><br><span class="line">   <span class="built_in">NSWindowToolbarButton</span>,</span><br><span class="line">   <span class="built_in">NSWindowDocumentIconButton</span>,</span><br><span class="line">   <span class="built_in">NSWindowDocumentVersionsButton</span> = <span class="number">6</span>,</span><br><span class="line">   <span class="built_in">NSWindowFullScreenButton</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">NSUInteger</span> <span class="built_in">NSWindowButton</span>;</span><br></pre></td></tr></table></figure>
+
+<p>名字很清楚的显示了window button的作用，这里我们需要自定义的是左边的三个按钮，所以需要用到的是<code>NSWindowCloseButton</code>（关闭窗口按钮），<code>NSWindowMiniaturizeButton</code>（最小化窗口按钮）和<code>NSWindowZoomButton</code>（最大化窗口按钮，<strong>不是全屏按钮</strong>）。</p>
+<p><strong>注意</strong><br>在OS X 10.10之后的版本中，<code>NSWindowZoomButton</code>会变成全屏按钮，而不是10.10之前的最大化窗口按钮。</p>
+<p>第二个参数设置成<code>self.window.styleMask</code>就OK了。</p>
+<p>这里windows button需要实现系统的悬停，响应窗口和非响应窗口的不同效果，那么就要实现鼠标移入和移出的方法<code>- mouseEntered:</code>和<code>- mouseExited:</code>，但是实现这个方法，需要重写<code>- updateTrackingAreas</code>方法，因为当大小或坐标改变后就会造成所指定的检测区域错误,所以我们需要重写<code>updateTrackingAreas</code>方法,将创建<code>NSTrackingArea</code>的工作放在其中。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)updateTrackingAreas &#123;</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">super</span> updateTrackingAreas];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSTrackingArea</span> *<span class="keyword">const</span> trackingArea = [[<span class="built_in">NSTrackingArea</span> alloc] initWithRect:<span class="built_in">NSZeroRect</span> options:(<span class="built_in">NSTrackingMouseEnteredAndExited</span> | <span class="built_in">NSTrackingActiveAlways</span> | <span class="built_in">NSTrackingInVisibleRect</span>) owner:<span class="keyword">self</span> userInfo:<span class="literal">nil</span>];</span><br><span class="line">    [<span class="keyword">self</span> addTrackingArea:trackingArea];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>然后继续实现鼠标移入移出的方法：</strong></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)mouseEntered:(<span class="built_in">NSEvent</span> *)event &#123;</span><br><span class="line">    [<span class="keyword">super</span> mouseEntered:event];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">YES</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)mouseExited:(<span class="built_in">NSEvent</span> *)event &#123;</span><br><span class="line">    [<span class="keyword">super</span> mouseExited:event];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">NO</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里我们需要实现一个在<strong>苹果的官方文档中并不存在</strong>的方法<code>- _mouseInGroup:</code>，这个方法用来返回判断鼠标是否在视图中的参数。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)_mouseInGroup:(<span class="built_in">NSButton</span> *)button &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>.mouseInside;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>最后一个就是需要重绘一下按钮的状态：</strong></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)setNeedsDisplayForStandardWindowButtons &#123;</span><br><span class="line">    [<span class="keyword">self</span>.closeButton setNeedsDisplay];</span><br><span class="line">    [<span class="keyword">self</span>.minitButton setNeedsDisplay];</span><br><span class="line">    [<span class="keyword">self</span>.zoomButton setNeedsDisplay];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就实现了自定义的window button，但是窗口在成为第一响应者和不适第一响应者的时候，还有当点击最小化的时候等等情况下，window button都会处于错误的状态中，例如，当失去第一响应的时候，这三个按钮应该变为淡灰色，但却是彩色，当点击最小化，然后再点击显示窗口的时候，三个按钮还是停留在鼠标移入的状态中，所以这些情况都要进行处理。这里我用通知实现了相关的处理：</p>
+<p><strong>首先，注册通知：</strong></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSNotificationCenter</span> *defaultCenter = [<span class="built_in">NSNotificationCenter</span> defaultCenter];</span><br><span class="line">[defaultCenter addObserver:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(applicationWillBecomeActive:)</span><br><span class="line">                      name:<span class="built_in">NSApplicationWillBecomeActiveNotification</span> object:<span class="built_in">NSApp</span>];</span><br><span class="line">[defaultCenter addObserver:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(applicationDidResignActive:)</span><br><span class="line">                      name:<span class="built_in">NSApplicationDidResignActiveNotification</span> object:<span class="built_in">NSApp</span>];</span><br><span class="line">[defaultCenter addObserver:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(windowActiveChanged:)</span><br><span class="line">                       name:<span class="built_in">NSWindowDidBecomeMainNotification</span> object:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+
+<p><strong>然后实现处理方法（如果有更好的处理方式，大家可以自行写逻辑，这里仅供参考）：</strong></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)applicationWillBecomeActive:(<span class="built_in">NSNotification</span> *)notification &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">YES</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">NO</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)applicationDidResignActive:(<span class="built_in">NSNotification</span> *)notification &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">NO</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)windowActiveChanged:(<span class="built_in">NSNotification</span> *)notification &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.mouseInside = <span class="literal">NO</span>;</span><br><span class="line">    [<span class="keyword">self</span> setNeedsDisplayForStandardWindowButtons];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样左边的三个自定义window button就已经完成。</p>
+<h3 id="兼容10-10之前的按钮需要实现自定义全屏按钮（NSWindowFullScreenButton）"><a href="#兼容10-10之前的按钮需要实现自定义全屏按钮（NSWindowFullScreenButton）" class="headerlink" title="兼容10.10之前的按钮需要实现自定义全屏按钮（NSWindowFullScreenButton）"></a>兼容10.10之前的按钮需要实现自定义全屏按钮（NSWindowFullScreenButton）</h3><p>创建全屏按钮的方式与之前相同，不多说直接看代码：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">self</span>.versionNum != <span class="built_in">NSNotFound</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.fullScreenButton = [<span class="built_in">NSWindow</span> standardWindowButton:<span class="built_in">NSWindowFullScreenButton</span> forStyleMask:<span class="keyword">self</span>.window.styleMask];</span><br><span class="line">        [<span class="keyword">self</span>.fullScreenButton setFrame:<span class="built_in">NSMakeRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">self</span>.fullScreenButton.frame.size.width, <span class="keyword">self</span>.fullScreenButton.frame.size.height)];</span><br><span class="line">        [<span class="keyword">self</span>.topView.fullScreenBackView addSubview:<span class="keyword">self</span>.fullScreenButton];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里我判断了一下系统的版本。</p>
+<p><strong>注意</strong></p>
+<blockquote>
+<p>设置按钮一定要在主视图控制器中进行，不能在自定义的子视图中进行，否则在10.10之前的系统中会出现coreUI的错误提示。而且这个错误出现的几率不是100%</p>
+</blockquote>
+<p>在全屏之后，我们最好将所有的window button给隐藏掉，调用<code>setHidden:</code>即可。</p>
+<p>这下，自定义的window button就完成了。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://www.tanhao.me/pieces/1808.html/">OSX的MouseEntered和MouseExited事件检测</a></li>
+<li><a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/7634788/cocoa-osx-nswindow-standardwindowbutton-behaving-strangely-once-copied-and-add">Cocoa/OSX - NSWindow standardWindowButton behaving strangely once copied and added again</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/macOS%E5%B7%A5%E4%BD%9C%E6%97%A5%E5%BF%97/" rel="tag"># macOS工作日志</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/08/2018-02-08-%E9%85%8D%E7%BD%AE%20git%20%E4%BB%A3%E7%90%86/" rel="prev" title="配置 git 代理">
+                  <i class="fa fa-chevron-left"></i> 配置 git 代理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/08/2018-02-08-iOS%E5%AD%A6%E4%B9%A0%E2%80%94%E5%BC%BA%E5%BC%95%E7%94%A8%EF%BC%88__strong%EF%BC%89%E5%92%8C%20%E5%BC%B1%E5%BC%95%E7%94%A8%EF%BC%88__weak%EF%BC%89/" rel="next" title="iOS学习—强引用（__strong）和 弱引用（__weak）">
+                  iOS学习—强引用（__strong）和 弱引用（__weak） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : 'f172c64c5f757f97e6989999e4cd00e1',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

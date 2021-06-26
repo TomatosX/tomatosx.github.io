@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="I had a presentation (in Japanese) about RxTest at RxSwift Meetup held at Tokyo.There does not seem to be lots of RxTest related materials on the web so I decided to translate the presentation into En">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Introduction to RxTest - tasanobu tech blog">
+<meta property="og:url" content="http://example.com/2018/01/30/2018-01-30-Introduction%20to%20RxTest%20-%20tasanobu%20tech%20blog/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="I had a presentation (in Japanese) about RxTest at RxSwift Meetup held at Tokyo.There does not seem to be lots of RxTest related materials on the web so I decided to translate the presentation into En">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.866Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="RxSwift">
+<meta property="article:tag" content="RxTest">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/01/30/2018-01-30-Introduction%20to%20RxTest%20-%20tasanobu%20tech%20blog/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Introduction to RxTest - tasanobu tech blog | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-RxTest"><span class="nav-number">1.</span> <span class="nav-text">What is RxTest?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Main-classes-of-RxTest"><span class="nav-number">2.</span> <span class="nav-text">Main classes of RxTest</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TestScheduler"><span class="nav-number">2.0.0.0.1.</span> <span class="nav-text">TestScheduler</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TestableObservable"><span class="nav-number">2.0.0.0.2.</span> <span class="nav-text">TestableObservable</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TestableObserver"><span class="nav-number">2.0.0.0.3.</span> <span class="nav-text">TestableObserver</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Samples"><span class="nav-number">3.</span> <span class="nav-text">Samples</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewModel-of-Github-follower-search-view"><span class="nav-number">3.1.</span> <span class="nav-text">ViewModel of Github follower search view</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Test-code-SearchViewModel-state"><span class="nav-number">3.1.1.</span> <span class="nav-text">Test code: SearchViewModel.state</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Wrap-up"><span class="nav-number">4.</span> <span class="nav-text">Wrap up</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/01/30/2018-01-30-Introduction%20to%20RxTest%20-%20tasanobu%20tech%20blog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Introduction to RxTest - tasanobu tech blog
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-30 00:00:00" itemprop="dateCreated datePublished" datetime="2018-01-30T00:00:00+08:00">2018-01-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>I had a <a target="_blank" rel="noopener" href="https://speakerdeck.com/tasanobu/rxtestru-men">presentation (in Japanese)</a> about RxTest at <a target="_blank" rel="noopener" href="https://connpass.com/event/41478/">RxSwift Meetup</a> held at Tokyo.<br>There does not seem to be lots of RxTest related materials on the web so I decided to translate the presentation into English and to write this post.</p>
+<p> <strong>Notes</strong> </p>
+<ul>
+<li><p>This post is based on</p>
+<ul>
+<li>Xcode 8.1 / Swift 3.0</li>
+<li>RxSwift 3.0.0</li>
+<li>RxTest 3.0.0</li>
+</ul>
+</li>
+<li><p>The code shown in this post is published on my GitHub repository <a target="_blank" rel="noopener" href="https://github.com/tasanobu/RxTest-Samples">here</a> .</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="What-is-RxTest"><a href="#What-is-RxTest" class="headerlink" title="What is RxTest?"></a>What is RxTest?</h1><ul>
+<li>RxTest is a test framework published at RxSwift repository.</li>
+<li>Most(All?) of the unit testing in RxSwift is implemented with RxTest</li>
+<li>RxTest is available for third-party like normal app developers and it’s easy to add it to your test target with Cocoapods by adding the code like below to your podfile.</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target <span class="string">&#x27;RxTest-SampleTests&#x27;</span> <span class="keyword">do</span></span><br><span class="line">    pod <span class="string">&#x27;RxTest&#x27;</span>,     <span class="string">&#x27;~&gt; 3.0&#x27;</span></span><br><span class="line">    pod <span class="string">&#x27;RxSwift&#x27;</span>,    <span class="string">&#x27;~&gt; 3.0&#x27;</span></span><br><span class="line">    pod <span class="string">&#x27;RxCocoa&#x27;</span>,    <span class="string">&#x27;~&gt; 3.0&#x27;</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Main-classes-of-RxTest"><a href="#Main-classes-of-RxTest" class="headerlink" title="Main classes of RxTest"></a>Main classes of RxTest</h1><h5 id="TestScheduler"><a href="#TestScheduler" class="headerlink" title="TestScheduler"></a>TestScheduler</h5><ul>
+<li>is a scheduler in which virtual time is implemented.</li>
+<li>emits events and executes arbitrary closures based on virtual time.</li>
+<li>has factory methods to instantiate <code>TestableObserver</code> and <code>TestObservable</code></li>
+</ul>
+<h5 id="TestableObservable"><a href="#TestableObservable" class="headerlink" title="TestableObservable"></a>TestableObservable</h5><ul>
+<li>is an observable sequence which has events sent to observer at the designated virtual time and records subscriptions(subscribe/unsubscribe) during its lifetime</li>
+</ul>
+<h5 id="TestableObserver"><a href="#TestableObserver" class="headerlink" title="TestableObserver"></a>TestableObserver</h5><ul>
+<li>is an observer which records all emitted events together with virtual time when they were received.</li>
+</ul>
+<h1 id="Samples"><a href="#Samples" class="headerlink" title="Samples"></a>Samples</h1><p>Let’s see how to use the classes introduced above.</p>
+<p><strong>map operator</strong></p>
+<p>The following is the test code of map operetor in RxSwift (I simplified a little.)</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test_map</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 1. Instantiate TestScheduler by designating virtual time 0</span></span><br><span class="line">    <span class="keyword">let</span> scheduler = <span class="type">TestScheduler</span>(initialClock: <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// 2. Instantiate TestableObservable&lt;Int&gt;</span></span><br><span class="line">    <span class="comment">// by designating value together with virtual time.</span></span><br><span class="line">    <span class="keyword">let</span> observable = scheduler.createHotObservable([</span><br><span class="line">        next(<span class="number">150</span>, <span class="number">1</span>),  <span class="comment">// (virtual time, value)</span></span><br><span class="line">        next(<span class="number">210</span>, <span class="number">0</span>),</span><br><span class="line">        next(<span class="number">240</span>, <span class="number">4</span>),</span><br><span class="line">        completed(<span class="number">300</span>)</span><br><span class="line">        ])</span><br><span class="line">    <span class="comment">// 3. Instantiate TestableObserver&lt;Int&gt;</span></span><br><span class="line">    <span class="keyword">let</span> observer = scheduler.createObserver(<span class="type">Int</span>.<span class="keyword">self</span>)</span><br><span class="line">    <span class="comment">// 4. Make `observer` subscribe `observable` at virtual time 200</span></span><br><span class="line">    scheduler.scheduleAt(<span class="number">200</span>) &#123;</span><br><span class="line">        observable.<span class="built_in">map</span> &#123; $<span class="number">0</span> * <span class="number">2</span> &#125;</span><br><span class="line">            .subscribe(observer)</span><br><span class="line">            .addDisposableTo(<span class="keyword">self</span>.disposeBag)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5. Start `scheduler`</span></span><br><span class="line">    scheduler.start()</span><br><span class="line">    <span class="keyword">let</span> expectedEvents = [</span><br><span class="line">        next(<span class="number">210</span>, <span class="number">0</span> * <span class="number">2</span>),</span><br><span class="line">        next(<span class="number">240</span>, <span class="number">4</span> * <span class="number">2</span>),</span><br><span class="line">        completed(<span class="number">300</span>)</span><br><span class="line">    ]</span><br><span class="line">    <span class="comment">// 6-1. Compare the events which `observer` received</span></span><br><span class="line">    <span class="type">XCTAssertEqual</span>(observer.events, expectedEvents)</span><br><span class="line">    <span class="keyword">let</span> expectedSubscriptions = [</span><br><span class="line">        <span class="type">Subscription</span>(<span class="number">200</span>, <span class="number">300</span>)</span><br><span class="line">    ]</span><br><span class="line">    <span class="comment">// 6-2. Compare the virtual times when `observable` was subscribed/unsubscribed</span></span><br><span class="line">    <span class="type">XCTAssertEqual</span>(observable.subscriptions, expectedSubscriptions)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ViewModel-of-Github-follower-search-view"><a href="#ViewModel-of-Github-follower-search-view" class="headerlink" title="ViewModel of Github follower search view"></a>ViewModel of Github follower search view</h2><p>As a more practical example, let’s see the view model for Github follower search view.</p>
+<p> <strong>ViewModel</strong></p>
+<p>The following class is the view model for the view and it is the test target.</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchViewModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> disposeBag = <span class="type">DisposeBag</span>()</span><br><span class="line">    <span class="comment">// api call status: .loading, .loaded, .error</span></span><br><span class="line">    <span class="keyword">var</span> state: <span class="type">Variable</span>&lt;<span class="type">State</span>&gt;  = <span class="type">Variable</span>(.loaded([]))</span><br><span class="line">    <span class="comment">// followers list</span></span><br><span class="line">    <span class="keyword">var</span> users: <span class="type">Variable</span>&lt;[<span class="type">User</span>]&gt; = <span class="type">Variable</span>([])</span><br><span class="line">    <span class="comment">// Client which has a web API logic</span></span><br><span class="line">    <span class="keyword">let</span> client: <span class="type">Client</span></span><br><span class="line">    <span class="keyword">init</span>(client: <span class="type">Client</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.client = client</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Action method to search followers</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">searchFollowers</span><span class="params">(ofUser user: String)</span></span> &#123;</span><br><span class="line">        state.value = .loading</span><br><span class="line">        client.fetchFollowers(ofUser: user)</span><br><span class="line">            .subscribe &#123; event <span class="keyword">in</span></span><br><span class="line">                <span class="keyword">switch</span> event &#123;</span><br><span class="line">                <span class="keyword">case</span> .next(<span class="keyword">let</span> users) :</span><br><span class="line">                    <span class="keyword">self</span>.state.value = .loaded(users)</span><br><span class="line">                    <span class="keyword">self</span>.users.value = users</span><br><span class="line">                <span class="keyword">case</span> .error(<span class="keyword">let</span> e):</span><br><span class="line">                    <span class="keyword">self</span>.state.value = .error(e <span class="keyword">as</span>? <span class="type">Client</span>.<span class="type">Error</span> ?? .unknown)</span><br><span class="line">                    <span class="keyword">self</span>.users.value = []</span><br><span class="line">                <span class="keyword">default</span>: <span class="comment">// ignore `.completed`</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            .addDisposableTo(disposeBag)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>There are 2 important points from unit testing perspective.</p>
+<ol>
+<li>Pass a <code>Client</code> object to <code>SearchModelView</code> ‘s initializer</li>
+<li>Call <code>Client.fetchFollowers()</code> inside <code>SearchViewModel</code></li>
+</ol>
+<p><strong>Mock Client</strong></p>
+<p>The following class is the mock object of <code>Client</code> which is used for unit testing.</p>
+<p>The mock class inherits <code>Client</code> (in order to simplify the sample).<br>It has a property <code>response</code> which is a <code>TestableObservable</code> used as API response and overrides <code>fetchFollowers()</code> and returns <code>response</code> from it.</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MockClient</span>: <span class="title">Client</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Observable used as API response</span></span><br><span class="line">    <span class="keyword">let</span> response: <span class="type">TestableObservable</span>&lt;[<span class="type">User</span>]&gt;</span><br><span class="line">    <span class="keyword">init</span>(response: <span class="type">TestableObservable</span>&lt;[<span class="type">User</span>]&gt;) &#123;</span><br><span class="line">        <span class="keyword">self</span>.response = response</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">fetchFollowers</span><span class="params">(ofUser user: String)</span></span> -&gt; <span class="type">Observable</span>&lt;[<span class="type">User</span>]&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> response.asObservable()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Test-code-SearchViewModel-state"><a href="#Test-code-SearchViewModel-state" class="headerlink" title="Test code: SearchViewModel.state"></a>Test code: <code>SearchViewModel.state</code></h3><p>Below is the test sample of <code>SearchViewModel.state</code>.<br>The value of the property changes in response to <code>searchFollowers()</code> which causes network request.</p>
+<p>The overall flow is almost the same as the previous example of <code>map</code> operator.</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test_state_when_searchFollowers_succeeded</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">let</span> users = [<span class="type">User</span>(id: <span class="number">12091114</span>, name: <span class="string">&quot;tunepolo&quot;</span>)]</span><br><span class="line">    <span class="comment">// 1. Instantiate TestableObserver</span></span><br><span class="line">    <span class="keyword">let</span> observer = scheduler.createObserver(<span class="type">State</span>.<span class="keyword">self</span>)</span><br><span class="line">    <span class="comment">// 2. Instantiate TestableObservable</span></span><br><span class="line">    <span class="keyword">let</span> observable = scheduler.createColdObservable([</span><br><span class="line">        next(<span class="number">100</span>, users)</span><br><span class="line">        ])</span><br><span class="line">    <span class="comment">// 3. Instantiate MockClient with the observable</span></span><br><span class="line">    <span class="keyword">let</span> client = <span class="type">MockClient</span>(response: observable)</span><br><span class="line">    <span class="comment">// 4. Instantiate SearchViewModel with MockClient</span></span><br><span class="line">    <span class="keyword">let</span> viewModel = <span class="type">SearchViewModel</span>(client: client)</span><br><span class="line">    <span class="comment">// 5. Make `observer` subscribe `observable` at virtual time 100</span></span><br><span class="line">    scheduler.scheduleAt(<span class="number">100</span>) &#123;</span><br><span class="line">      viewModel.state.asObservable()</span><br><span class="line">          .subscribe(observer)</span><br><span class="line">          .addDisposableTo(<span class="keyword">self</span>.disposeBag)</span><br><span class="line">    &#125;        </span><br><span class="line">    <span class="comment">// 6. Call `viewModel.searchFollowers()` at virtual time 200</span></span><br><span class="line">    scheduler.scheduleAt(<span class="number">200</span>) &#123;</span><br><span class="line">        viewModel.searchFollowers(ofUser: <span class="string">&quot;tasanobu&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 7. Start `scheduler`</span></span><br><span class="line">    scheduler.start()</span><br><span class="line">    <span class="comment">// 8. Inspect the events that the observer received</span></span><br><span class="line">    <span class="keyword">let</span> expectedEvents = [</span><br><span class="line">        next(<span class="number">100</span>, <span class="type">State</span>.loaded([])),</span><br><span class="line">        next(<span class="number">200</span>, <span class="type">State</span>.loading),</span><br><span class="line">        next(<span class="number">300</span>, <span class="type">State</span>.loaded(users))</span><br><span class="line">    ]</span><br><span class="line">    <span class="type">XCTAssertEqual</span>(observer.events, expectedEvents)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Wrap-up"><a href="#Wrap-up" class="headerlink" title="Wrap up"></a>Wrap up</h1><p>This post describes the overview of RxTest and the examples of unit testing with RxTest.<br>You might think it’s hard to get into unit testing of features implemented with RxSwift.<br>However, it’s doable to write such test code by following the steps below.</p>
+<ol>
+<li>Instantiate TestScheduler</li>
+<li>As TestableObservable, instantiate an event sequence which you want to inspect</li>
+<li>Instantiate TestableObserver which records events to be inspected</li>
+<li>Make TestableObserver subscribe TestableObservable</li>
+<li>Start TestScheduler</li>
+<li>Inspect TestableObserver.events or TestableObservable.subscriptions depending on your test needs.</li>
+</ol>
+<p><strong>From:</strong> </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://tasanobu.github.io/blog/2016/11/19/introduction-to-rxtest/">Introduction to RxTest - tasanobu tech blog</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RxSwift/" rel="tag"># RxSwift</a>
+              <a href="/tags/RxTest/" rel="tag"># RxTest</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/01/29/2018-01-29-CentOS%20%E4%B8%8B%20Shadowsocks-libev%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC/" rel="prev" title="CentOS 下 Shadowsocks-libev 一键安装脚本">
+                  <i class="fa fa-chevron-left"></i> CentOS 下 Shadowsocks-libev 一键安装脚本
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/05/2018-02-05-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%E3%80%90%E5%9F%BA%E7%A1%80%E8%A1%A5%E5%85%A8%E3%80%91/" rel="next" title="Python 学习笔记（三）【基础补全】">
+                  Python 学习笔记（三）【基础补全】 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : '3757f19de0add9151403d840d746e8cc',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

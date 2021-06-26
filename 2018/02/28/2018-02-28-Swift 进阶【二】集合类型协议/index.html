@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="序列（Sequence） Sequence定义： 1234protocol Sequence &amp;#123;    associatedtype Iterator: IteratorProtocol    func makeIterator() -&gt; Iterator&amp;#125;  要实现一个Sequence，首先需要提供一个返回迭代器（iterator）的makeIterator() 方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift 进阶【二】集合类型协议">
+<meta property="og:url" content="http://example.com/2018/02/28/2018-02-28-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%8C%E3%80%91%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="序列（Sequence） Sequence定义： 1234protocol Sequence &amp;#123;    associatedtype Iterator: IteratorProtocol    func makeIterator() -&gt; Iterator&amp;#125;  要实现一个Sequence，首先需要提供一个返回迭代器（iterator）的makeIterator() 方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.872Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift学习">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/02/28/2018-02-28-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%8C%E3%80%91%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B%E5%8D%8F%E8%AE%AE/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swift 进阶【二】集合类型协议 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%EF%BC%88Sequence%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">序列（Sequence）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">集合类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%81%B5%E5%AE%88-ExpressibleByArrayLiteral-%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.0.1.</span> <span class="nav-text">遵守 ExpressibleByArrayLiteral 协议</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.0.2.</span> <span class="nav-text">关联类型</span></a></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/02/28/2018-02-28-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%BA%8C%E3%80%91%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift 进阶【二】集合类型协议
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-28 00:00:00" itemprop="dateCreated datePublished" datetime="2018-02-28T00:00:00+08:00">2018-02-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="序列（Sequence）"><a href="#序列（Sequence）" class="headerlink" title="序列（Sequence）"></a>序列（Sequence）</h3><hr>
+<p>Sequence定义：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Sequence</span> </span>&#123;</span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Iterator</span>: <span class="type">IteratorProtocol</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">makeIterator</span><span class="params">()</span></span> -&gt; <span class="type">Iterator</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要实现一个Sequence，首先需要提供一个返回<strong>迭代器（iterator）</strong>的<code>makeIterator()</code> 方法。<br>对于迭代器，它是一个满足 <code>IteratorProtocol</code> 协议的类型。</p>
+<p>IteratorProtocol协议的定义：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">IteratorProtocol</span> </span>&#123;</span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Element</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">next</span><span class="params">()</span></span> -&gt; <span class="type">Element?</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p><strong>IteratorProtocol 协议中唯一的一个方法是 next()，这个方法需要在每次被调用时返回序列中的下一个值。当序列被耗尽时，next() 应该返回 nil</strong></p>
+<p>关联类型 <code>Element</code> 指定了迭代器产生的值的类型。</p>
+<p>举几个例子进行体会：</p>
+<p>1、斐波那契数列</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 菲波那切数列</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">FibsIterator</span>: <span class="title">IteratorProtocol</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> state = (<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">next</span><span class="params">()</span></span> -&gt; <span class="type">Int?</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> upcomingNumber = state.<span class="number">0</span></span><br><span class="line">        state = (state.<span class="number">1</span>, state.<span class="number">0</span> + state.<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> upcomingNumber &gt; <span class="number">1000</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> upcomingNumber</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iterator = <span class="type">FibsIterator</span>()</span><br><span class="line"><span class="keyword">while</span> <span class="keyword">let</span> number = iterator.next() &#123;</span><br><span class="line">    <span class="built_in">print</span>(number)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987</span></span><br></pre></td></tr></table></figure>
+
+<p>2、返回字符串切片</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 依次返回字符串的切片</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PrefixIterator</span>: <span class="title">IteratorProtocol</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> string: <span class="type">String</span></span><br><span class="line">    <span class="keyword">var</span> offset: <span class="type">String</span>.<span class="type">Index</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">init</span>(str: <span class="type">String</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.string = str</span><br><span class="line">        <span class="keyword">self</span>.offset = str.startIndex</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">next</span><span class="params">()</span></span> -&gt; <span class="type">String?</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> offset &lt; string.endIndex <span class="keyword">else</span> &#123; <span class="keyword">return</span> <span class="literal">nil</span> &#125;</span><br><span class="line">        offset = string.index(after: offset)</span><br><span class="line">        <span class="keyword">return</span> <span class="type">String</span>(string[string.startIndex..&lt;offset])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> strIterator = <span class="type">PrefixIterator</span>(str: <span class="string">&quot;ABCDEFG&quot;</span>)</span><br><span class="line"><span class="keyword">while</span> <span class="keyword">let</span> str = strIterator.next() &#123;</span><br><span class="line">    <span class="built_in">print</span>(str)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A</span></span><br><span class="line"><span class="comment">// AB</span></span><br><span class="line"><span class="comment">// ABC</span></span><br><span class="line"><span class="comment">// ABCD</span></span><br><span class="line"><span class="comment">// ABCDE</span></span><br><span class="line"><span class="comment">// ABCDEF</span></span><br><span class="line"><span class="comment">// ABCDEFG</span></span><br></pre></td></tr></table></figure>
+
+<p>再定义一个PrefixSequence类型：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 实现PrefixIterator的sequence协议，之后可以用for来进行循环</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PrefixSequence</span>: <span class="title">Sequence</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> str: <span class="type">String</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">makeIterator</span><span class="params">()</span></span> -&gt; <span class="type">PrefixIterator</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="type">PrefixIterator</span>(str: str)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> str <span class="keyword">in</span> <span class="type">PrefixSequence</span>(str: <span class="string">&quot;ABCDEFGHIJKLMN&quot;</span>) &#123;</span><br><span class="line">    <span class="built_in">print</span>(str)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现了sequence协议，就可以使用sequence协议中提供的所有方法</span></span><br><span class="line"><span class="keyword">let</span> lower = <span class="type">PrefixSequence</span>(str: <span class="string">&quot;ABCDEFGHIJKLMN&quot;</span>).<span class="built_in">map</span> &#123; <span class="keyword">return</span> $<span class="number">0</span>.lowercased() &#125;</span><br><span class="line"><span class="built_in">print</span>(lower.<span class="keyword">prefix</span>(<span class="number">10</span>))</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h3><hr>
+<p>集合类型 (Collection) 指的是那些稳定的序列，它们能够被多次遍历且保持一致。和序列不同，集合类型不能是无限的。</p>
+<p>Collection 协议是建立在 Sequence 协议上的。除了从 Sequence 继承了全部方法以外，得益于可以获取指定位置的元素以及稳定迭代的保证，集合还获取了一些新的能力。比如 count 属性，如果序列是不稳定的，那么对序列计数将会消耗序列中的元素，这显然不是我们的目的。但是对于稳定的集合类型，我们就可以对其进行计数。</p>
+<p>集合类型在标准库中运用广泛。除了 Array，Dictionary 和 Set 以外，String 的四种表示方式都是集合类型。另外还有 CountableRange 和 UnsafeBufferPointer 也是如此。更进一步，我们可以看到标准库外的一些类型也遵守了 Collection 协议。有两个我们熟知的类型通过这种方法获得了很多新的能力，它们是 Data 和 IndexSet，它们都来自 Foundation 框架。</p>
+<p>自定义一个队列的集合类型：</p>
+<p>1、为队列设计协议：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 一个能够将元素入队和出队的类型</span></span><br><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Queue</span> </span>&#123;</span><br><span class="line">    <span class="comment">/// 在 `self` 中所持有的元素的类型</span></span><br><span class="line">    <span class="keyword">associatedtype</span> <span class="type">Element</span></span><br><span class="line">    <span class="comment">/// 将 `newElement` 入队到 `self`</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">enqueue</span><span class="params">(<span class="keyword">_</span> newElement: Element)</span></span></span><br><span class="line">    <span class="comment">/// 从 `self` 出队一个元素</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">dequeue</span><span class="params">()</span></span> -&gt; <span class="type">Element?</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、队列的实现</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 一个高效的 FIFO 队列，其中元素类型为 `Element`</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">FIFOQueue</span>&lt;<span class="title">Element</span>&gt;: <span class="title">Queue</span> </span>&#123;</span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> <span class="keyword">left</span>: [<span class="type">Element</span>] = []</span><br><span class="line">    <span class="keyword">fileprivate</span> <span class="keyword">var</span> <span class="keyword">right</span>: [<span class="type">Element</span>] = []</span><br><span class="line">    <span class="comment">/// 将元素添加到队列最后</span></span><br><span class="line">    <span class="comment">/// - 复杂度: O(1)</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">enqueue</span><span class="params">(<span class="keyword">_</span> newElement: Element)</span></span> &#123;</span><br><span class="line">        <span class="keyword">right</span>.append(newElement)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/// 从队列前端移除一个元素</span></span><br><span class="line">    <span class="comment">/// 当队列为空时，返回 nil</span></span><br><span class="line">    <span class="comment">/// - 复杂度: 平摊 O(1)</span></span><br><span class="line">    <span class="keyword">mutating</span> <span class="function"><span class="keyword">func</span> <span class="title">dequeue</span><span class="params">()</span></span> -&gt; <span class="type">Element?</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">left</span>.isEmpty &#123;</span><br><span class="line">            <span class="keyword">left</span> = <span class="keyword">right</span>.reversed()</span><br><span class="line">            <span class="keyword">right</span>.removeAll()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">left</span>.popLast()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可能会对 dequeue 操作被声明为 O(1) 感到有一点奇怪。确实，它包含了一个复杂度为 O(n) 的 reverse 操作。对于单个的操作来说可能耗时会长一些，不过对于非常多的 push 和 pop 操作来说，取出一个元素的平摊耗时是一个常数。</p>
+<p>理解这个复杂度的关键在于理解反向操作发生的频率以及发生在多少个元素上。我们可以使用“银行家理论”来分析平摊复杂度。想象一下，你每次将一个元素放入队列，就相当于你在银行存了一块钱。接下来，你把右侧的栈的内容转移到左侧去，因为对应每个已经入队的元素，你在银行里都相当于有一块钱。你可以用这些钱来支付反转。你的账户永远不会负债，你也从来不会花费比你付出的更多的东西。</p>
+<p>这个理论可以用来解释一个操作的消耗在时间上进行平摊的情况，即便其中的某次调用可能不是常数，但平摊下来以后这个耗时依然是常数。Swift 中向数组后面添加一个元素的操作是常数时间复杂度，这也可以用同样的理论进行解释。当数组存储空间耗尽时，它需要申请更大的空间，并且把所有已经存在于数组中的元素复制过去。但是因为每次申请空间都会使存储空间翻倍，“添加元素，支付一块钱，数组尺寸翻倍，最多耗费所有钱来进行复制”这个理论已然是有效的。</p>
+<h5 id="遵守-ExpressibleByArrayLiteral-协议"><a href="#遵守-ExpressibleByArrayLiteral-协议" class="headerlink" title="遵守 ExpressibleByArrayLiteral 协议"></a>遵守 ExpressibleByArrayLiteral 协议</h5><hr>
+<p>遵守 ExpressibleByArrayLiteral 协议的好处是，可以像用字面量去创建一个Array的方式去创建队列（[value1, value2, etc]）。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">FIFOQueue</span>: <span class="title">ExpressibleByArrayLiteral</span> </span>&#123;</span><br><span class="line">    <span class="keyword">typealias</span> <span class="type">ArrayLiteralElement</span> = <span class="type">Element</span></span><br><span class="line">    <span class="keyword">init</span>(arrayLiteral elements: <span class="type">Element</span>...) &#123;</span><br><span class="line">        <span class="keyword">self</span>.<span class="keyword">init</span>(<span class="keyword">left</span>: elements.reversed(), <span class="keyword">right</span>: [])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> queue: <span class="type">FIFOQueue</span>&lt;<span class="type">Int</span>&gt; = [<span class="number">1</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">2</span>, <span class="number">6</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<p><strong>字面量和类型的区别</strong></p>
+<p>在这里需要特别注意 Swift 中字面量和类型的区别。<strong>这里的 [1, 2, 3] 并不是一个数组，它只是一个“数组字面量”，是一种写法，我们可以用它来创建任意的遵守 ExpressibleByArrayLiteral 的类型。</strong>在这个字面量里面还包括了其他的字面量类型，比如能够创建任意遵守 ExpressibleByIntegerLiteral 的整数型字面量。<br>这些字面量有“默认”的类型，<strong>如果你不指明类型，那些 Swift 将假设你想要的就是默认的类型。</strong>正如你所料，数组字面量的默认类型是 Array，整数字面量的默认类型是 Int，浮点数字面量默认为 Double，而字符串字面量则对应 String。<strong>但是这只发生在你没有指定类型的情况下。</strong></p>
+<h5 id="关联类型"><a href="#关联类型" class="headerlink" title="关联类型"></a>关联类型</h5><hr>
+<p>building…</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift%E5%AD%A6%E4%B9%A0/" rel="tag"># Swift学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/27/2018-02-27-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B8%80%E3%80%91%E5%86%85%E5%BB%BA%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B/" rel="prev" title="Swift 进阶【一】内建集合类型">
+                  <i class="fa fa-chevron-left"></i> Swift 进阶【一】内建集合类型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/01/2018-03-01-Swift%20%E8%BF%9B%E9%98%B6%E3%80%90%E4%B8%89%E3%80%91%E5%8F%AF%E9%80%89%E5%80%BC/" rel="next" title="Swift 进阶【三】可选值">
+                  Swift 进阶【三】可选值 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : 'f16b80dbfcfdfa15402075614e4c1944',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

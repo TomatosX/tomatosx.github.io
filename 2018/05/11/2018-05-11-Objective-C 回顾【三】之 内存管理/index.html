@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SF+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="理解引用计数 Objective-C 语言使用引用计数来管理内存，也就是说，每个对象都有个可以递增或递减的计数器。如果想使某个对象继续存活，那就递增其引用计数；用完了之后，就递减其计数。计数变为 O，就表示没人关注此对象了，于是，就可以把它销毁。 引用计数工作原理Objective-C 中，调用 alloc 方法所返回的对象由调用者所拥有。也就是说，调用者已通过 alloc 方法表达了想令该对象继">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C 回顾【三】之 内存管理">
+<meta property="og:url" content="http://example.com/2018/05/11/2018-05-11-Objective-C%20%E5%9B%9E%E9%A1%BE%E3%80%90%E4%B8%89%E3%80%91%E4%B9%8B%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="CX330">
+<meta property="og:description" content="理解引用计数 Objective-C 语言使用引用计数来管理内存，也就是说，每个对象都有个可以递增或递减的计数器。如果想使某个对象继续存活，那就递增其引用计数；用完了之后，就递减其计数。计数变为 O，就表示没人关注此对象了，于是，就可以把它销毁。 引用计数工作原理Objective-C 中，调用 alloc 方法所返回的对象由调用者所拥有。也就是说，调用者已通过 alloc 方法表达了想令该对象继">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-16T03:22:25.882Z">
+<meta property="article:author" content="CX330">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Objective-C">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/05/11/2018-05-11-Objective-C%20%E5%9B%9E%E9%A1%BE%E3%80%90%E4%B8%89%E3%80%91%E4%B9%8B%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Objective-C 回顾【三】之 内存管理 | CX330</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">CX330</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">理解引用计数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">引用计数工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E5%AD%98%E5%8F%96%E6%96%B9%E6%B3%95%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">属性存取方法中的内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E6%B1%A0"><span class="nav-number">1.3.</span> <span class="nav-text">自动释放池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5-ARC-%E7%AE%80%E5%8C%96%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">以 ARC 简化引用计数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E8%AF%AD%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">变量的内存管理语义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-dealloc-%E6%96%B9%E6%B3%95%E4%B8%AD%E5%8F%AA%E9%87%8A%E6%94%BE%E5%BC%95%E7%94%A8%E5%B9%B6%E8%A7%A3%E9%99%A4%E7%9B%91%E5%90%AC"><span class="nav-number">3.</span> <span class="nav-text">在 dealloc 方法中只释放引用并解除监听</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="CX330"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">CX330</p>
+  <div class="site-description" itemprop="description">Stay hungry. Stay foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/TomatosX" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;TomatosX" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wujiafengwork@gmail.com" title="E-Mail → mailto:wujiafengwork@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/05/11/2018-05-11-Objective-C%20%E5%9B%9E%E9%A1%BE%E3%80%90%E4%B8%89%E3%80%91%E4%B9%8B%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Objective-C 回顾【三】之 内存管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-05-11 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-11T00:00:00+08:00">2018-05-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="理解引用计数"><a href="#理解引用计数" class="headerlink" title="理解引用计数"></a>理解引用计数</h2><hr>
+<p>Objective-C 语言使用引用计数来管理内存，也就是说，每个对象都有个可以递增或递减的计数器。如果想使某个对象继续存活，那就递增其引用计数；用完了之后，就递减其计数。计数变为 O，就表示没人关注此对象了，于是，就可以把它销毁。</p>
+<h3 id="引用计数工作原理"><a href="#引用计数工作原理" class="headerlink" title="引用计数工作原理"></a>引用计数工作原理</h3><p>Objective-C 中，调用 <code>alloc</code> 方法所返回的对象由调用者所拥有。也就是说，调用者已通过 <code>alloc</code> 方法表达了想令该对象继续存活下去的意愿。不过请注意，这并不是说对象此时的保留计数必定是 1。在 <code>alloc</code> 或。<code>initWithInt:</code> 方法的实现代码中，也许还有其他对象也保留了此对象，所以，其保留计数可能会大于 1。能够肯定的是：保留计数至少为 1。保留计数这个概念就应该这样来理解才对。绝不应该说保留计数一定是某个值，只能说你所执行的操作是递增了该计数还是递减了该计数。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSMutableArray</span> *array = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line"><span class="built_in">NSNumber</span> *number = [[<span class="built_in">NSNumber</span> alloc] initWithInt:<span class="number">1337</span>];</span><br><span class="line"></span><br><span class="line">[array addObject:number];</span><br><span class="line">[number release];</span><br><span class="line"></span><br><span class="line"><span class="comment">// do something with &#x27;array&#x27;</span></span><br><span class="line"></span><br><span class="line">[array release];</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>如上面的代码，创建完数组后，把 <code>number</code> 对象加人其中。调用数组的 <code>addobject:</code> 方法时，数组也会在 <code>number</code> 上调用 <code>retain</code> 方法，以期继续保留此对象。这时，保留计数至少为 2。接下来，代码不再需要 <code>number</code> 对象了，于是将其释放。现在的保留计数至少为 1。这样就不能照常使用 <code>number</code> 变量了。调用 <code>release</code> 之后，已经无法保证所指的对象仍然存活。当然，根据本例中的代码，我们显然知道 <code>number</code> 对象在调用了 <code>release</code> 之后仍然存活。因为数组还在引用着它。然而绝不应假设此对象一定存活，也就是说，不要像下面这样编写代码</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSNumber</span> *number = [[<span class="built_in">NSNumber</span> alloc] initWithInt:<span class="number">1337</span>];</span><br><span class="line">[array addObject:number];</span><br><span class="line">[number release];</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span> (<span class="string">@&quot;number = %@&quot;</span>, number);</span><br></pre></td></tr></table></figure>
+
+<p>即便上述代码在本例中可以正常执行，也仍然不是个好办法。如果调用 <code>release</code> 之后，基于某些原因，其保留计数降至 O，那么 <code>number</code> 对象所占内存也许会回收，这样的话，再调用 <code>NSLog</code> 可能就将使程序崩溃了。笔者在这里只说“可能”，而没说“一定”，因为对象所占的内存在“解除分配”（deallocated）之后，只是放回“可用内存池”（avaiable pool）。如果执行 <code>NSLog</code> 时尚未覆写对象内存，那么该对象仍然有效，这时程序不会崩溃。由此可见：因过早释放对象而导致的 bug 很难调试。</p>
+<p>为避免在不经意间使用了无效对象，一般调用完 <code>release</code> 之后都会清空指针。这就能保证不会出现可能指向无效对象的指针，这种指针通常称为“悬垂指针”。比方说，可以这样编写代码来防止此情况发生：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSNumber</span> *number = [[<span class="built_in">NSNumber</span> alloc] initWithInt:<span class="number">1337</span>];</span><br><span class="line">[array addObject:number];</span><br><span class="line">[number release];</span><br><span class="line"></span><br><span class="line">number = <span class="literal">nil</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="属性存取方法中的内存管理"><a href="#属性存取方法中的内存管理" class="headerlink" title="属性存取方法中的内存管理"></a>属性存取方法中的内存管理</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)setFoo:(<span class="keyword">id</span>)foo &#123;</span><br><span class="line">    [foo <span class="keyword">retain</span>];</span><br><span class="line">    [_foo release];</span><br><span class="line">    _foo = foo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此方法将保留新值并释放旧值，然后更新实例变量，令其指向新值。顺序很重要。假如还未保留新值就先把旧值释放了，而且两个值又指向同一个对象，那么，先执行的 <code>release</code> 操作就可能导致系统将此对象永久回收。而后续的 <code>retain</code> 操作则无法令这个已经彻底回收的对象“复生”，于是实例变量就成了悬垂指针（nil）。</p>
+<h3 id="自动释放池"><a href="#自动释放池" class="headerlink" title="自动释放池"></a>自动释放池</h3><p><code>autorelease</code> 此方法会在稍后递减计数，通常是在下一次“事件循环”时递减，不过也可能执行得更早些。</p>
+<p>此特性很有用，尤其是在方法中返回对象时更应该用它。比如：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)stringValue &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *str = [[<span class="built_in">NSString</span> alloc] </span><br><span class="line">                        initWithFormat:<span class="string">@&quot;I am this: %@&quot;</span>, <span class="keyword">self</span>];</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里不能在方法内释放 <code>str</code> 否则还没等方法返回，系统就把该对象回收了。这里应该调用 <code>autorelease</code>，它会在稍后释放对象，从而给调用者留下了足够长的时间，使其可以在需要时先保留返回值。换句话说，此方法可以保证对象在跨越“方法调用边界”后一定存活。实际上，释放操作会在清空最外层的自动释放池时执行，除非你有自己的自动释放池，否则这个时机指的就是当前线程的下一次事件循环。改写 <code>stringValue</code> 方法，使用 <code>autorelease</code> 来释放对象：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)stringValue &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *str = [[<span class="built_in">NSString</span> alloc] </span><br><span class="line">                        initWithFormat:<span class="string">@&quot;I am this: %@&quot;</span>, <span class="keyword">self</span>];</span><br><span class="line">    <span class="keyword">return</span> [str autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改之后，<code>stringValue</code> 方法把 <code>NSString</code> 对象返回给调用者时，此对象必然存活。所以我们能够像下面这样使用它：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *str = [<span class="keyword">self</span> stringValue];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;The string is: %@&quot;</span>, str);</span><br></pre></td></tr></table></figure>
+
+<p>因为自动释放池中的释放操作要等到下一次事件循环时才会执行，所以 <code>NSLog</code> 语句在使用 <code>str</code> 对象前不需要手工执行保留操作。但是，假如要持有此对象的话（比如将其设置给实例变量），那就需要保留，并于稍后释放：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">_instanceVariable = [[<span class="keyword">self</span> stringValue] <span class="keyword">retain</span>];</span><br><span class="line">[_instanceVariable release];</span><br></pre></td></tr></table></figure>
+
+<p>由此可见，<code>autorelease</code> 能延长对象生命期，使其在跨越方法调用边界后依然可以存活一段时间。</p>
+<p><strong>要点：</strong></p>
+<ul>
+<li>引用计数机制通过可以递增递减的计数器来管理内存。对象创建好之后，其保留计数至少为 1。若保留计数为正，则对象继续存活。当保留计数降为 0 时，对象就被销毁了。</li>
+<li>在对象生命周期中，其余对象通过引用来保留或释放此对象。保留与释放操作分别会递增递减保留计数。</li>
+</ul>
+<h2 id="以-ARC-简化引用计数"><a href="#以-ARC-简化引用计数" class="headerlink" title="以 ARC 简化引用计数"></a>以 ARC 简化引用计数</h2><hr>
+<h3 id="变量的内存管理语义"><a href="#变量的内存管理语义" class="headerlink" title="变量的内存管理语义"></a>变量的内存管理语义</h3><ul>
+<li>__strong：默认语义，保留此值。</li>
+<li>__unsafe_unretained：不保留此值，这么做可能不安全，因为等到再次使用变量时，其对象可能已经回收了。</li>
+<li>__weak：不保留此值，但是变量可以安全使用，因为如果系统把这个对象回收了，那么变量也会自动清空。</li>
+<li>__autoreleasing：把对象“按引用传递”给方法时，使用这个特殊的修饰符。此值在方法返回时自动释放。</li>
+</ul>
+<p>我们经常会给局部变量加上修饰符，用以打破由“块”所引入的“引用循环”。块会自动保留其所捕获的全部对象，而如果这其中有某个对象又保留了块本身，那么就可能导致“引用循环”。可以用 <code>__weak</code> 局部变量来打破这种“引用循环”。</p>
+<p><strong>要点：</strong></p>
+<ul>
+<li>有 ARC 之后，程序员就无须担心内存管理问题了。使用 ARC 来编程，可以省去类中的许多“样板代码”。</li>
+<li>ARC 管理对象生命期的办法基本上就是：在合适的地方插入“保留”及“释放”操作。在 ARC 环境下，变量的内存管理语义可以通过修饰符指明，而原来则需要手工执行“保留”及“释放”操作。</li>
+<li>由方法所返回的对象，其内存管理语义总是通过方法名来体现。ARC 将此确定为开发者必须遵守的规则。</li>
+<li>ARC 只负责管理 Objective-C 对象的内存。尤其要注意：CoreFoundation 对象不归 ARC 管理，开发者必须适时调用 CFRetain/CFRelease。</li>
+</ul>
+<h2 id="在-dealloc-方法中只释放引用并解除监听"><a href="#在-dealloc-方法中只释放引用并解除监听" class="headerlink" title="在 dealloc 方法中只释放引用并解除监听"></a>在 dealloc 方法中只释放引用并解除监听</h2><hr>
+<p><strong>要点：</strong></p>
+<ul>
+<li>在 <code>dealloc</code> 方法里，应该做的事情就是释放指向其他对象的引用，并取消原来订阅的“键值观测”（KVO）或 <code>NSNotificationCenter</code> 等通知，不要做其他事情。</li>
+<li>如果对象持有文件描述符等系统资源，那么应该专门编写一个方法来释放此种资源。这样的类要和其使用者约定：用完资源后必须调用 <code>close</code> 方法。</li>
+<li>执行异步任务的方法不应在 <code>dealloc</code> 里调用；只能在正常状态下执行的那些方法也不应在 <code>dealloc</code> 里调用，因为此时对象已处于正在回收的状态了。</li>
+</ul>
+<p>未完持续…</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/30/2018-04-30-iOS%20%E5%B9%B6%E5%8F%91%EF%BC%8C%E9%94%81%EF%BC%8C%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E3%80%90%E4%BA%8C%E3%80%91Operation/" rel="prev" title="iOS 并发，锁，线程同步【二】Operation">
+                  <i class="fa fa-chevron-left"></i> iOS 并发，锁，线程同步【二】Operation
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/05/21/2018-05-21-%E5%9C%A8%20macOS%20%E4%B8%AD%E7%94%A8%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F%E5%8C%96%20APFS%20%E6%A0%BC%E5%BC%8F%20U%20%E7%9B%98/" rel="next" title="在 macOS 中用命令格式化 APFS 格式 U 盘">
+                  在 macOS 中用命令格式化 APFS 格式 U 盘 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CX330</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '93e88b99de6ef6b6ed8a',
+      clientSecret: 'c256915ad919ecd79dd7f6e03507ace0b2a82a5e',
+      repo        : 'gitalkissue',
+      owner       : 'TomatosX',
+      admin       : ['TomatosX'],
+      id          : 'b0f416724c0c802ad1ff7a678f2ac048',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
