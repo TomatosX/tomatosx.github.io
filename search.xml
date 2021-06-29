@@ -153,6 +153,51 @@
       </tags>
   </entry>
   <entry>
+    <title>Debian 下 Shadowsocks-libev 一键安装脚本</title>
+    <url>/2018/01/29/2018-01-29-Debian%20%E4%B8%8B%20Shadowsocks-libev%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h2 id="本脚本适用环境："><a href="#本脚本适用环境：" class="headerlink" title="本脚本适用环境："></a>本脚本适用环境：</h2><hr>
+<p>系统支持：Debian/Ubuntu<br>内存要求：≥128M<br>日期：2018 年 06 月 01 日</p>
+<h2 id="关于本脚本："><a href="#关于本脚本：" class="headerlink" title="关于本脚本："></a>关于本脚本：</h2><hr>
+<p>Debian 或 Ubuntu 下一键安装 libev 版的 Shadowsocks 最新版本。该版本的特点是内存占用小（600k左右），使用 libev 和 C 编写，低 CPU 消耗，甚至可以安装在基于 OpenWRT 的路由器上。<br>友情提示：如果你有问题，请先参考这篇《Shadowsocks Troubleshooting》后再问。</p>
+<a id="more"></a>
+
+<h2 id="默认配置："><a href="#默认配置：" class="headerlink" title="默认配置："></a>默认配置：</h2><hr>
+<p>服务器端口：自己设定（如不设定，默认从 9000-19999 之间随机生成）<br>密码：自己设定（如不设定，默认为 teddysun.com）<br>加密方式：自己设定（如不设定，默认为 aes-256-gcm）</p>
+<h2 id="使用方法："><a href="#使用方法：" class="headerlink" title="使用方法："></a>使用方法：</h2><hr>
+<p>使用root用户登录，运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget --no-check-certificate -O shadowsocks-libev-debian.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev-debian.sh</span><br><span class="line">chmod +x shadowsocks-libev-debian.sh</span><br><span class="line">./shadowsocks-libev-debian.sh 2&gt;&amp;1 | tee shadowsocks-libev-debian.log</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，脚本提示如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Congratulations, Shadowsocks-libev server install completed!</span><br><span class="line">Your Server IP        :your_server_ip</span><br><span class="line">Your Server Port      :your_server_port</span><br><span class="line">Your Password         :your_password</span><br><span class="line">Your Encryption Method:your_encryption_method</span><br><span class="line"></span><br><span class="line">Welcome to visit:https://teddysun.com/358.html</span><br><span class="line">Enjoy it!</span><br></pre></td></tr></table></figure>
+
+<h2 id="卸载方法："><a href="#卸载方法：" class="headerlink" title="卸载方法："></a>卸载方法：</h2><hr>
+<p>使用 root 用户登录，运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./shadowsocks-libev-debian.sh uninstall</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他事项："><a href="#其他事项：" class="headerlink" title="其他事项："></a>其他事项：</h2><hr>
+<p>客户端配置的参考链接： <a href="https://teddysun.com/339.html">https://teddysun.com/339.html</a><br>本脚本安装完成后，已将 Shadowsocks-libev 加入开机自启动。</p>
+<h2 id="使用命令："><a href="#使用命令：" class="headerlink" title="使用命令："></a>使用命令：</h2><hr>
+<p>启动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks start</span><br></pre></td></tr></table></figure>
+
+<p>停止：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks stop</span><br></pre></td></tr></table></figure>
+
+<p>重启：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks restart</span><br></pre></td></tr></table></figure>
+
+<p>查看状态：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks status</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>科学上网</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CentOS 下 Shadowsocks-libev 一键安装脚本</title>
     <url>/2018/01/29/2018-01-29-CentOS%20%E4%B8%8B%20Shadowsocks-libev%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC/</url>
     <content><![CDATA[<h2 id="本脚本适用环境："><a href="#本脚本适用环境：" class="headerlink" title="本脚本适用环境："></a>本脚本适用环境：</h2><hr>
@@ -185,51 +230,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;etc&#x2F;init.d&#x2F;shadowsocks status</span><br></pre></td></tr></table></figure>
 
 <p>可以查看进程是否启动。<br>本脚本安装完成后，会将 Shadowsocks-libev 加入开机自启动。</p>
-<h2 id="使用命令："><a href="#使用命令：" class="headerlink" title="使用命令："></a>使用命令：</h2><hr>
-<p>启动：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks start</span><br></pre></td></tr></table></figure>
-
-<p>停止：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks stop</span><br></pre></td></tr></table></figure>
-
-<p>重启：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks restart</span><br></pre></td></tr></table></figure>
-
-<p>查看状态：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks status</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>网络</category>
-      </categories>
-      <tags>
-        <tag>科学上网</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Debian 下 Shadowsocks-libev 一键安装脚本</title>
-    <url>/2018/01/29/2018-01-29-Debian%20%E4%B8%8B%20Shadowsocks-libev%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h2 id="本脚本适用环境："><a href="#本脚本适用环境：" class="headerlink" title="本脚本适用环境："></a>本脚本适用环境：</h2><hr>
-<p>系统支持：Debian/Ubuntu<br>内存要求：≥128M<br>日期：2018 年 06 月 01 日</p>
-<h2 id="关于本脚本："><a href="#关于本脚本：" class="headerlink" title="关于本脚本："></a>关于本脚本：</h2><hr>
-<p>Debian 或 Ubuntu 下一键安装 libev 版的 Shadowsocks 最新版本。该版本的特点是内存占用小（600k左右），使用 libev 和 C 编写，低 CPU 消耗，甚至可以安装在基于 OpenWRT 的路由器上。<br>友情提示：如果你有问题，请先参考这篇《Shadowsocks Troubleshooting》后再问。</p>
-<a id="more"></a>
-
-<h2 id="默认配置："><a href="#默认配置：" class="headerlink" title="默认配置："></a>默认配置：</h2><hr>
-<p>服务器端口：自己设定（如不设定，默认从 9000-19999 之间随机生成）<br>密码：自己设定（如不设定，默认为 teddysun.com）<br>加密方式：自己设定（如不设定，默认为 aes-256-gcm）</p>
-<h2 id="使用方法："><a href="#使用方法：" class="headerlink" title="使用方法："></a>使用方法：</h2><hr>
-<p>使用root用户登录，运行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget --no-check-certificate -O shadowsocks-libev-debian.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev-debian.sh</span><br><span class="line">chmod +x shadowsocks-libev-debian.sh</span><br><span class="line">./shadowsocks-libev-debian.sh 2&gt;&amp;1 | tee shadowsocks-libev-debian.log</span><br></pre></td></tr></table></figure>
-
-<p>安装完成后，脚本提示如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Congratulations, Shadowsocks-libev server install completed!</span><br><span class="line">Your Server IP        :your_server_ip</span><br><span class="line">Your Server Port      :your_server_port</span><br><span class="line">Your Password         :your_password</span><br><span class="line">Your Encryption Method:your_encryption_method</span><br><span class="line"></span><br><span class="line">Welcome to visit:https://teddysun.com/358.html</span><br><span class="line">Enjoy it!</span><br></pre></td></tr></table></figure>
-
-<h2 id="卸载方法："><a href="#卸载方法：" class="headerlink" title="卸载方法："></a>卸载方法：</h2><hr>
-<p>使用 root 用户登录，运行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./shadowsocks-libev-debian.sh uninstall</span><br></pre></td></tr></table></figure>
-
-<h2 id="其他事项："><a href="#其他事项：" class="headerlink" title="其他事项："></a>其他事项：</h2><hr>
-<p>客户端配置的参考链接： <a href="https://teddysun.com/339.html">https://teddysun.com/339.html</a><br>本脚本安装完成后，已将 Shadowsocks-libev 加入开机自启动。</p>
 <h2 id="使用命令："><a href="#使用命令：" class="headerlink" title="使用命令："></a>使用命令：</h2><hr>
 <p>启动：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/etc/init.d/shadowsocks start</span><br></pre></td></tr></table></figure>
@@ -396,32 +396,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Mac中切换默认终端为zsh</title>
-    <url>/2018/01/29/2018-01-29-%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4%E7%BB%88%E7%AB%AF%E4%B8%BAzsh/</url>
-    <content><![CDATA[<p>mac os 系统默认的终端为bash，切换该终端为zsh，可以用以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/zsh</span><br></pre></td></tr></table></figure>
-
-<p>如过要切回默认终端bash则使用以下命令</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/bash</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>环境设置</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>终端制作Mac的安装U盘</title>
-    <url>/2018/01/29/2018-01-29-%E5%88%B6%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85U%E7%9B%98/</url>
-    <content><![CDATA[<p>制作安装U盘，只需执行如下命令：</p>
-<p><code>san</code> 是你U盘的名字。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo &#x2F;Applications&#x2F;Install\ macOS\ High\ Sierra.app&#x2F;Contents&#x2F;Resources&#x2F;createinstallmedia --volume &#x2F;Volumes&#x2F;san --applicationpath &#x2F;Applications&#x2F;Install\ macOS\ High\ Sierra.app --nointeraction</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>日志</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>安装CocoaPods</title>
     <url>/2018/01/29/2018-01-29-%E5%AE%89%E8%A3%85CocoaPods/</url>
     <content><![CDATA[<h4 id="更新系统的gem"><a href="#更新系统的gem" class="headerlink" title="更新系统的gem"></a>更新系统的gem</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gem update --system</span><br></pre></td></tr></table></figure>
@@ -453,6 +427,32 @@
       </categories>
       <tags>
         <tag>环境设置</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac中切换默认终端为zsh</title>
+    <url>/2018/01/29/2018-01-29-%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4%E7%BB%88%E7%AB%AF%E4%B8%BAzsh/</url>
+    <content><![CDATA[<p>mac os 系统默认的终端为bash，切换该终端为zsh，可以用以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/zsh</span><br></pre></td></tr></table></figure>
+
+<p>如过要切回默认终端bash则使用以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/bash</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>环境设置</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>终端制作Mac的安装U盘</title>
+    <url>/2018/01/29/2018-01-29-%E5%88%B6%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85U%E7%9B%98/</url>
+    <content><![CDATA[<p>制作安装U盘，只需执行如下命令：</p>
+<p><code>san</code> 是你U盘的名字。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo &#x2F;Applications&#x2F;Install\ macOS\ High\ Sierra.app&#x2F;Contents&#x2F;Resources&#x2F;createinstallmedia --volume &#x2F;Volumes&#x2F;san --applicationpath &#x2F;Applications&#x2F;Install\ macOS\ High\ Sierra.app --nointeraction</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>日志</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -690,56 +690,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Python 学习笔记（四）【日期和时间】</title>
-    <url>/2018/02/06/2018-02-06-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E3%80%90%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4%E3%80%91/</url>
-    <content><![CDATA[<h3 id="获取格式化的时间"><a href="#获取格式化的时间" class="headerlink" title="获取格式化的时间"></a>获取格式化的时间</h3><hr>
-<p>你可以根据需求选取各种格式，但是最简单的获取可读的时间模式的函数是asctime():</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">localtime = time.asctime( time.localtime(time.time()) )</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;本地时间为 :&quot;</span>, localtime</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 本地时间为 : Thu Apr  7 10:05:21 2016</span></span><br></pre></td></tr></table></figure>
-
-<a id="more"></a>
-
-
-<h3 id="格式化日期"><a href="#格式化日期" class="headerlink" title="格式化日期"></a>格式化日期</h3><hr>
-<p>我们可以使用 time 模块的 strftime 方法来格式化日期：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式化成2016-03-20 11:45:39形式</span></span><br><span class="line"><span class="built_in">print</span> time.strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, time.localtime()) </span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式化成Sat Mar 28 22:24:24 2016形式</span></span><br><span class="line"><span class="built_in">print</span> time.strftime(<span class="string">&quot;%a %b %d %H:%M:%S %Y&quot;</span>, time.localtime()) </span><br><span class="line">  </span><br><span class="line"><span class="comment"># 将格式字符串转换为时间戳</span></span><br><span class="line">a = <span class="string">&quot;Sat Mar 28 22:24:24 2016&quot;</span></span><br><span class="line"><span class="built_in">print</span> time.mktime(time.strptime(a,<span class="string">&quot;%a %b %d %H:%M:%S %Y&quot;</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 2016-04-07 10:25:09</span></span><br><span class="line"><span class="comment"># Thu Apr 07 10:25:09 2016</span></span><br><span class="line"><span class="comment"># 1459175064.0</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="Python中时间日期格式化符号"><a href="#Python中时间日期格式化符号" class="headerlink" title="Python中时间日期格式化符号"></a>Python中时间日期格式化符号</h3><hr>
-<ul>
-<li>%y 两位数的年份表示（00-99）</li>
-<li>%Y 四位数的年份表示（000-9999）</li>
-<li>%m 月份（01-12）</li>
-<li>%d 月内中的一天（0-31）</li>
-<li>%H 24小时制小时数（0-23）</li>
-<li>%I 12小时制小时数（01-12）</li>
-<li>%M 分钟数（00=59）</li>
-<li>%S 秒（00-59）</li>
-<li>%a 本地简化星期名称</li>
-<li>%A 本地完整星期名称</li>
-<li>%b 本地简化的月份名称</li>
-<li>%B 本地完整的月份名称</li>
-<li>%c 本地相应的日期表示和时间表示</li>
-<li>%j 年内的一天（001-366）</li>
-<li>%p 本地A.M.或P.M.的等价符</li>
-<li>%U 一年中的星期数（00-53）星期天为星期的开始</li>
-<li>%w 星期（0-6），星期天为星期的开始</li>
-<li>%W 一年中的星期数（00-53）星期一为星期的开始</li>
-<li>%x 本地相应的日期表示</li>
-<li>%X 本地相应的时间表示</li>
-<li>%Z 当前时区的名称</li>
-<li>%% %号本身</li>
-</ul>
-<h3 id="获取某月日历"><a href="#获取某月日历" class="headerlink" title="获取某月日历"></a>获取某月日历</h3><hr>
-<p>Calendar模块有很广泛的方法用来处理年历和月历，例如打印某月的月历：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> calendar</span><br><span class="line"></span><br><span class="line">cal = calendar.month(<span class="number">2016</span>, <span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;以下输出2016年1月份的日历:&quot;</span></span><br><span class="line"><span class="built_in">print</span> cal;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 以下输出2016年1月份的日历:</span></span><br><span class="line"><span class="comment">#     January 2016</span></span><br><span class="line"><span class="comment"># Mo Tu We Th Fr Sa Su</span></span><br><span class="line"><span class="comment">#              1  2  3</span></span><br><span class="line"><span class="comment">#  4  5  6  7  8  9 10</span></span><br><span class="line"><span class="comment"># 11 12 13 14 15 16 17</span></span><br><span class="line"><span class="comment"># 18 19 20 21 22 23 24</span></span><br><span class="line"><span class="comment"># 25 26 27 28 29 30 31</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技术学习</category>
-      </categories>
-      <tags>
-        <tag>Python学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pod Search 出现 JSON ParserError 错误</title>
     <url>/2018/02/07/2018-02-07-Pod%20Search%20%E5%87%BA%E7%8E%B0%20JSON%20ParserError%20%E9%94%99%E8%AF%AF/</url>
     <content><![CDATA[<p>今天执行 <code>pod search</code> 命令的时候出现了 <code>JSON ParserError</code> 的错误，类似于如下：</p>
@@ -853,6 +803,56 @@
 
 <p>补充：<br>    在Python中，有 filter，map，reduce方法，lambda用于此方法中如下：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>foo = [<span class="number">2</span>, <span class="number">18</span>, <span class="number">9</span>, <span class="number">22</span>, <span class="number">17</span>, <span class="number">24</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">27</span>]</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> <span class="built_in">filter</span>(<span class="keyword">lambda</span> x: x % <span class="number">3</span> == <span class="number">0</span>, foo)</span><br><span class="line">[<span class="number">18</span>, <span class="number">9</span>, <span class="number">24</span>, <span class="number">12</span>, <span class="number">27</span>]</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> <span class="built_in">map</span>(<span class="keyword">lambda</span> x: x * <span class="number">2</span> + <span class="number">10</span>, foo)</span><br><span class="line">[<span class="number">14</span>, <span class="number">46</span>, <span class="number">28</span>, <span class="number">54</span>, <span class="number">44</span>, <span class="number">58</span>, <span class="number">26</span>, <span class="number">34</span>, <span class="number">64</span>]</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> reduce(<span class="keyword">lambda</span> x, y: x + y, foo)</span><br><span class="line"><span class="number">139</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技术学习</category>
+      </categories>
+      <tags>
+        <tag>Python学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python 学习笔记（四）【日期和时间】</title>
+    <url>/2018/02/06/2018-02-06-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E3%80%90%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4%E3%80%91/</url>
+    <content><![CDATA[<h3 id="获取格式化的时间"><a href="#获取格式化的时间" class="headerlink" title="获取格式化的时间"></a>获取格式化的时间</h3><hr>
+<p>你可以根据需求选取各种格式，但是最简单的获取可读的时间模式的函数是asctime():</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">localtime = time.asctime( time.localtime(time.time()) )</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;本地时间为 :&quot;</span>, localtime</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 本地时间为 : Thu Apr  7 10:05:21 2016</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+
+<h3 id="格式化日期"><a href="#格式化日期" class="headerlink" title="格式化日期"></a>格式化日期</h3><hr>
+<p>我们可以使用 time 模块的 strftime 方法来格式化日期：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式化成2016-03-20 11:45:39形式</span></span><br><span class="line"><span class="built_in">print</span> time.strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, time.localtime()) </span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式化成Sat Mar 28 22:24:24 2016形式</span></span><br><span class="line"><span class="built_in">print</span> time.strftime(<span class="string">&quot;%a %b %d %H:%M:%S %Y&quot;</span>, time.localtime()) </span><br><span class="line">  </span><br><span class="line"><span class="comment"># 将格式字符串转换为时间戳</span></span><br><span class="line">a = <span class="string">&quot;Sat Mar 28 22:24:24 2016&quot;</span></span><br><span class="line"><span class="built_in">print</span> time.mktime(time.strptime(a,<span class="string">&quot;%a %b %d %H:%M:%S %Y&quot;</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 2016-04-07 10:25:09</span></span><br><span class="line"><span class="comment"># Thu Apr 07 10:25:09 2016</span></span><br><span class="line"><span class="comment"># 1459175064.0</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Python中时间日期格式化符号"><a href="#Python中时间日期格式化符号" class="headerlink" title="Python中时间日期格式化符号"></a>Python中时间日期格式化符号</h3><hr>
+<ul>
+<li>%y 两位数的年份表示（00-99）</li>
+<li>%Y 四位数的年份表示（000-9999）</li>
+<li>%m 月份（01-12）</li>
+<li>%d 月内中的一天（0-31）</li>
+<li>%H 24小时制小时数（0-23）</li>
+<li>%I 12小时制小时数（01-12）</li>
+<li>%M 分钟数（00=59）</li>
+<li>%S 秒（00-59）</li>
+<li>%a 本地简化星期名称</li>
+<li>%A 本地完整星期名称</li>
+<li>%b 本地简化的月份名称</li>
+<li>%B 本地完整的月份名称</li>
+<li>%c 本地相应的日期表示和时间表示</li>
+<li>%j 年内的一天（001-366）</li>
+<li>%p 本地A.M.或P.M.的等价符</li>
+<li>%U 一年中的星期数（00-53）星期天为星期的开始</li>
+<li>%w 星期（0-6），星期天为星期的开始</li>
+<li>%W 一年中的星期数（00-53）星期一为星期的开始</li>
+<li>%x 本地相应的日期表示</li>
+<li>%X 本地相应的时间表示</li>
+<li>%Z 当前时区的名称</li>
+<li>%% %号本身</li>
+</ul>
+<h3 id="获取某月日历"><a href="#获取某月日历" class="headerlink" title="获取某月日历"></a>获取某月日历</h3><hr>
+<p>Calendar模块有很广泛的方法用来处理年历和月历，例如打印某月的月历：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> calendar</span><br><span class="line"></span><br><span class="line">cal = calendar.month(<span class="number">2016</span>, <span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;以下输出2016年1月份的日历:&quot;</span></span><br><span class="line"><span class="built_in">print</span> cal;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line"><span class="comment"># 以下输出2016年1月份的日历:</span></span><br><span class="line"><span class="comment">#     January 2016</span></span><br><span class="line"><span class="comment"># Mo Tu We Th Fr Sa Su</span></span><br><span class="line"><span class="comment">#              1  2  3</span></span><br><span class="line"><span class="comment">#  4  5  6  7  8  9 10</span></span><br><span class="line"><span class="comment"># 11 12 13 14 15 16 17</span></span><br><span class="line"><span class="comment"># 18 19 20 21 22 23 24</span></span><br><span class="line"><span class="comment"># 25 26 27 28 29 30 31</span></span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>技术学习</category>
       </categories>
@@ -1111,85 +1111,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Python 学习笔记（六）【模块】</title>
-    <url>/2018/02/10/2018-02-10-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%E3%80%90%E6%A8%A1%E5%9D%97%E3%80%91/</url>
-    <content><![CDATA[<blockquote>
-<p>Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和Python语句。<br>模块让你能够有逻辑地组织你的 Python 代码段。<br>把相关的代码分配到一个模块里能让你的代码更好用，更易懂。<br>模块能定义函数，类和变量，模块里也能包含可执行的代码。  </p>
-</blockquote>
-<h5 id="import-语句"><a href="#import-语句" class="headerlink" title="import 语句"></a>import 语句</h5><hr>
-<p><strong>模块的引入</strong></p>
-<p>模块定义好后，我们可以使用 import 语句来引入模块，语法如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> module1[, module2[,... moduleN]</span><br></pre></td></tr></table></figure>
-
-<p>比如要引用模块 math，就可以在文件最开始的地方用 import math 来引入。在调用 math 模块中的函数时，必须这样引用：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">模块名.函数名</span><br></pre></td></tr></table></figure>
-
-<a id="more"></a>
-
-<p>当解释器遇到 import 语句，如果模块在当前的搜索路径就会被导入。</p>
-<p><strong>一个模块只会被导入一次，不管你执行了多少次import。这样可以防止导入模块被一遍又一遍地执行。</strong></p>
-<h5 id="From…import-语句"><a href="#From…import-语句" class="headerlink" title="From…import 语句"></a>From…import 语句</h5><hr>
-<p>Python 的 from 语句让你从模块中导入一个指定的部分到当前命名空间中。语法如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> modname <span class="keyword">import</span> name1[, name2[, ... nameN]]</span><br></pre></td></tr></table></figure>
-
-<p>例如，要导入模块 fib 的 fibonacci 函数，使用如下语句：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> fib <span class="keyword">import</span> fibonacci</span><br></pre></td></tr></table></figure>
-
-<p>这个声明不会把整个 fib 模块导入到当前的命名空间中，它只会将 fib 里的 fibonacci 单个引入到执行这个声明的模块的全局符号表。</p>
-<h5 id="From…import-语句-1"><a href="#From…import-语句-1" class="headerlink" title="From…import* 语句"></a>From…import* 语句</h5><hr>
-<p>把一个模块的所有内容全都导入到当前的命名空间也是可行的，只需使用如下声明：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> modname <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
-
-<p>这提供了一个简单的方法来导入一个模块中的所有项目。然而这种声明不该被过多地使用。<br>例如我们想一次性引入 math 模块中所有的东西，语句如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
-
-<h5 id="搜索路径"><a href="#搜索路径" class="headerlink" title="搜索路径"></a>搜索路径</h5><hr>
-<p>当你导入一个模块，Python 解析器对模块位置的搜索顺序是：<br>    * 1、当前目录<br>    * 2、如果不在当前目录，Python 则搜索在 shell 变量 PYTHONPATH 下的每个目录。<br>    * 3、如果都找不到，Python会察看默认路径。UNIX下，默认路径一般为/usr/local/lib/python/。<br>模块搜索路径存储在 system 模块的 sys.path 变量中。变量里包含当前目录，PYTHONPATH和由安装过程决定的默认目录。</p>
-<h5 id="PYTHONPATH-变量"><a href="#PYTHONPATH-变量" class="headerlink" title="PYTHONPATH 变量"></a>PYTHONPATH 变量</h5><p>作为环境变量，PYTHONPATH 由装在一个列表里的许多目录组成。PYTHONPATH 的语法和 shell 变量 PATH 的一样。<br>在 Windows 系统，典型的 PYTHONPATH 如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> PYTHONPATH=c:\python27\lib;</span><br></pre></td></tr></table></figure>
-
-<p>在 UNIX 系统，典型的 PYTHONPATH 如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> PYTHONPATH=/usr/local/lib/python</span><br></pre></td></tr></table></figure>
-
-<h5 id="命名空间和作用域"><a href="#命名空间和作用域" class="headerlink" title="命名空间和作用域"></a>命名空间和作用域</h5><hr>
-<p>变量是拥有匹配对象的名字（标识符）。命名空间是一个包含了变量名称们（键）和它们各自相应的对象们（值）的字典。</p>
-<p>一个 Python 表达式可以访问局部命名空间和全局命名空间里的变量。如果一个局部变量和一个全局变量重名，则局部变量会覆盖全局变量。</p>
-<p>每个函数都有自己的命名空间。类的方法的作用域规则和通常函数的一样。</p>
-<p><strong>Python 会智能地猜测一个变量是局部的还是全局的，它假设任何在函数内赋值的变量都是局部的。</strong></p>
-<p><strong>因此，如果要给函数内的全局变量赋值，必须使用 global 语句。</strong></p>
-<p><strong>global VarName 的表达式会告诉 Python， VarName 是一个全局变量，这样 Python 就不会在局部命名空间里寻找这个变量了。</strong></p>
-<p>例如，我们在全局命名空间里定义一个变量 Money。我们再在函数内给变量 Money 赋值，然后 Python 会假定 Money 是一个局部变量。然而，我们并没有在访问前声明一个局部变量 Money，结果就是会出现一个 UnboundLocalError 的错误。取消 global 语句的注释就能解决这个问题。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"> </span><br><span class="line">Money = <span class="number">2000</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">AddMoney</span>():</span></span><br><span class="line">   <span class="comment"># 想改正代码就取消以下注释:</span></span><br><span class="line">   <span class="comment"># global Money</span></span><br><span class="line">   Money = Money + <span class="number">1</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">print</span> Money</span><br><span class="line">AddMoney()</span><br><span class="line"><span class="built_in">print</span> Money</span><br></pre></td></tr></table></figure>
-
-<h5 id="dir-函数"><a href="#dir-函数" class="headerlink" title="dir()函数"></a>dir()函数</h5><hr>
-<p>dir() 函数一个排好序的字符串列表，内容是一个模块里定义过的名字。</p>
-<p>返回的列表容纳了在一个模块里定义的所有模块，变量和函数。如下一个简单的实例：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 导入内置math模块</span></span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"> </span><br><span class="line">content = <span class="built_in">dir</span>(math)</span><br><span class="line"> </span><br><span class="line"><span class="built_in">print</span> content;</span><br></pre></td></tr></table></figure>
-
-<p>以上实例输出结果：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[&#39;__doc__&#39;, &#39;__file__&#39;, &#39;__name__&#39;, &#39;acos&#39;, &#39;asin&#39;, &#39;atan&#39;, </span><br><span class="line">&#39;atan2&#39;, &#39;ceil&#39;, &#39;cos&#39;, &#39;cosh&#39;, &#39;degrees&#39;, &#39;e&#39;, &#39;exp&#39;, </span><br><span class="line">&#39;fabs&#39;, &#39;floor&#39;, &#39;fmod&#39;, &#39;frexp&#39;, &#39;hypot&#39;, &#39;ldexp&#39;, &#39;log&#39;,</span><br><span class="line">&#39;log10&#39;, &#39;modf&#39;, &#39;pi&#39;, &#39;pow&#39;, &#39;radians&#39;, &#39;sin&#39;, &#39;sinh&#39;, </span><br><span class="line">&#39;sqrt&#39;, &#39;tan&#39;, &#39;tanh&#39;]</span><br></pre></td></tr></table></figure>
-
-<p><strong>在这里，特殊字符串变量__name__指向模块的名字，__file__指向该模块的导入文件名。</strong></p>
-<h5 id="globals-和-locals-函数"><a href="#globals-和-locals-函数" class="headerlink" title="globals() 和 locals() 函数"></a>globals() 和 locals() 函数</h5><hr>
-<p><strong>根据调用地方的不同，globals() 和 locals() 函数可被用来返回全局和局部命名空间里的名字。</strong></p>
-<p>如果在函数内部调用 locals()，返回的是所有能在该函数里访问的命名。</p>
-<p>如果在函数内部调用 globals()，返回的是所有在该函数里能访问的全局名字。</p>
-<p>两个函数的返回类型都是字典。所以名字们能用 keys() 函数摘取。</p>
-<h5 id="reload-函数"><a href="#reload-函数" class="headerlink" title="reload() 函数"></a>reload() 函数</h5><hr>
-<p><strong>当一个模块被导入到一个脚本，模块顶层部分的代码只会被执行一次。</strong></p>
-<p><strong>因此，如果你想重新执行模块里顶层部分的代码，可以用 reload() 函数。该函数会重新导入之前导入过的模块。语法如下：</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">reload(module_name)</span><br></pre></td></tr></table></figure>
-
-<p><strong>在这里，module_name要直接放模块的名字，而不是一个字符串形式。</strong>比如想重载 hello 模块，如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">reload(hello)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技术学习</category>
-      </categories>
-      <tags>
-        <tag>Python学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Python 学习笔记（七）【Python中的包】</title>
     <url>/2018/02/12/2018-02-12-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%E3%80%90Python%E4%B8%AD%E7%9A%84%E5%8C%85%E3%80%91/</url>
     <content><![CDATA[<p>包是一个分层次的文件目录结构，它定义了一个由模块及子包，和子包下的子包等组成的 Python 的应用环境。<br><strong>简单来说，包就是文件夹，但该文件夹下必须存在 <code>__init__.py</code> 文件, 该文件的内容可以为空。<code>__int__.py</code> 用于标识当前文件夹是一个包。</strong><br>考虑一个在 <code>package_runoob</code> 目录下的 <code>runoob1.py</code>、<code>runoob2.py</code>、<code>__init__.py</code> 文件，<code>test.py</code> 为测试调用包的代码，目录结构如下：</p>
@@ -1271,6 +1192,85 @@
       </categories>
       <tags>
         <tag>路由器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python 学习笔记（六）【模块】</title>
+    <url>/2018/02/10/2018-02-10-Python%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%E3%80%90%E6%A8%A1%E5%9D%97%E3%80%91/</url>
+    <content><![CDATA[<blockquote>
+<p>Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和Python语句。<br>模块让你能够有逻辑地组织你的 Python 代码段。<br>把相关的代码分配到一个模块里能让你的代码更好用，更易懂。<br>模块能定义函数，类和变量，模块里也能包含可执行的代码。  </p>
+</blockquote>
+<h5 id="import-语句"><a href="#import-语句" class="headerlink" title="import 语句"></a>import 语句</h5><hr>
+<p><strong>模块的引入</strong></p>
+<p>模块定义好后，我们可以使用 import 语句来引入模块，语法如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> module1[, module2[,... moduleN]</span><br></pre></td></tr></table></figure>
+
+<p>比如要引用模块 math，就可以在文件最开始的地方用 import math 来引入。在调用 math 模块中的函数时，必须这样引用：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">模块名.函数名</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>当解释器遇到 import 语句，如果模块在当前的搜索路径就会被导入。</p>
+<p><strong>一个模块只会被导入一次，不管你执行了多少次import。这样可以防止导入模块被一遍又一遍地执行。</strong></p>
+<h5 id="From…import-语句"><a href="#From…import-语句" class="headerlink" title="From…import 语句"></a>From…import 语句</h5><hr>
+<p>Python 的 from 语句让你从模块中导入一个指定的部分到当前命名空间中。语法如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> modname <span class="keyword">import</span> name1[, name2[, ... nameN]]</span><br></pre></td></tr></table></figure>
+
+<p>例如，要导入模块 fib 的 fibonacci 函数，使用如下语句：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> fib <span class="keyword">import</span> fibonacci</span><br></pre></td></tr></table></figure>
+
+<p>这个声明不会把整个 fib 模块导入到当前的命名空间中，它只会将 fib 里的 fibonacci 单个引入到执行这个声明的模块的全局符号表。</p>
+<h5 id="From…import-语句-1"><a href="#From…import-语句-1" class="headerlink" title="From…import* 语句"></a>From…import* 语句</h5><hr>
+<p>把一个模块的所有内容全都导入到当前的命名空间也是可行的，只需使用如下声明：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> modname <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+
+<p>这提供了一个简单的方法来导入一个模块中的所有项目。然而这种声明不该被过多地使用。<br>例如我们想一次性引入 math 模块中所有的东西，语句如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+
+<h5 id="搜索路径"><a href="#搜索路径" class="headerlink" title="搜索路径"></a>搜索路径</h5><hr>
+<p>当你导入一个模块，Python 解析器对模块位置的搜索顺序是：<br>    * 1、当前目录<br>    * 2、如果不在当前目录，Python 则搜索在 shell 变量 PYTHONPATH 下的每个目录。<br>    * 3、如果都找不到，Python会察看默认路径。UNIX下，默认路径一般为/usr/local/lib/python/。<br>模块搜索路径存储在 system 模块的 sys.path 变量中。变量里包含当前目录，PYTHONPATH和由安装过程决定的默认目录。</p>
+<h5 id="PYTHONPATH-变量"><a href="#PYTHONPATH-变量" class="headerlink" title="PYTHONPATH 变量"></a>PYTHONPATH 变量</h5><p>作为环境变量，PYTHONPATH 由装在一个列表里的许多目录组成。PYTHONPATH 的语法和 shell 变量 PATH 的一样。<br>在 Windows 系统，典型的 PYTHONPATH 如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> PYTHONPATH=c:\python27\lib;</span><br></pre></td></tr></table></figure>
+
+<p>在 UNIX 系统，典型的 PYTHONPATH 如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> PYTHONPATH=/usr/local/lib/python</span><br></pre></td></tr></table></figure>
+
+<h5 id="命名空间和作用域"><a href="#命名空间和作用域" class="headerlink" title="命名空间和作用域"></a>命名空间和作用域</h5><hr>
+<p>变量是拥有匹配对象的名字（标识符）。命名空间是一个包含了变量名称们（键）和它们各自相应的对象们（值）的字典。</p>
+<p>一个 Python 表达式可以访问局部命名空间和全局命名空间里的变量。如果一个局部变量和一个全局变量重名，则局部变量会覆盖全局变量。</p>
+<p>每个函数都有自己的命名空间。类的方法的作用域规则和通常函数的一样。</p>
+<p><strong>Python 会智能地猜测一个变量是局部的还是全局的，它假设任何在函数内赋值的变量都是局部的。</strong></p>
+<p><strong>因此，如果要给函数内的全局变量赋值，必须使用 global 语句。</strong></p>
+<p><strong>global VarName 的表达式会告诉 Python， VarName 是一个全局变量，这样 Python 就不会在局部命名空间里寻找这个变量了。</strong></p>
+<p>例如，我们在全局命名空间里定义一个变量 Money。我们再在函数内给变量 Money 赋值，然后 Python 会假定 Money 是一个局部变量。然而，我们并没有在访问前声明一个局部变量 Money，结果就是会出现一个 UnboundLocalError 的错误。取消 global 语句的注释就能解决这个问题。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"> </span><br><span class="line">Money = <span class="number">2000</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">AddMoney</span>():</span></span><br><span class="line">   <span class="comment"># 想改正代码就取消以下注释:</span></span><br><span class="line">   <span class="comment"># global Money</span></span><br><span class="line">   Money = Money + <span class="number">1</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">print</span> Money</span><br><span class="line">AddMoney()</span><br><span class="line"><span class="built_in">print</span> Money</span><br></pre></td></tr></table></figure>
+
+<h5 id="dir-函数"><a href="#dir-函数" class="headerlink" title="dir()函数"></a>dir()函数</h5><hr>
+<p>dir() 函数一个排好序的字符串列表，内容是一个模块里定义过的名字。</p>
+<p>返回的列表容纳了在一个模块里定义的所有模块，变量和函数。如下一个简单的实例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: UTF-8 -*-</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 导入内置math模块</span></span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"> </span><br><span class="line">content = <span class="built_in">dir</span>(math)</span><br><span class="line"> </span><br><span class="line"><span class="built_in">print</span> content;</span><br></pre></td></tr></table></figure>
+
+<p>以上实例输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[&#39;__doc__&#39;, &#39;__file__&#39;, &#39;__name__&#39;, &#39;acos&#39;, &#39;asin&#39;, &#39;atan&#39;, </span><br><span class="line">&#39;atan2&#39;, &#39;ceil&#39;, &#39;cos&#39;, &#39;cosh&#39;, &#39;degrees&#39;, &#39;e&#39;, &#39;exp&#39;, </span><br><span class="line">&#39;fabs&#39;, &#39;floor&#39;, &#39;fmod&#39;, &#39;frexp&#39;, &#39;hypot&#39;, &#39;ldexp&#39;, &#39;log&#39;,</span><br><span class="line">&#39;log10&#39;, &#39;modf&#39;, &#39;pi&#39;, &#39;pow&#39;, &#39;radians&#39;, &#39;sin&#39;, &#39;sinh&#39;, </span><br><span class="line">&#39;sqrt&#39;, &#39;tan&#39;, &#39;tanh&#39;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>在这里，特殊字符串变量__name__指向模块的名字，__file__指向该模块的导入文件名。</strong></p>
+<h5 id="globals-和-locals-函数"><a href="#globals-和-locals-函数" class="headerlink" title="globals() 和 locals() 函数"></a>globals() 和 locals() 函数</h5><hr>
+<p><strong>根据调用地方的不同，globals() 和 locals() 函数可被用来返回全局和局部命名空间里的名字。</strong></p>
+<p>如果在函数内部调用 locals()，返回的是所有能在该函数里访问的命名。</p>
+<p>如果在函数内部调用 globals()，返回的是所有在该函数里能访问的全局名字。</p>
+<p>两个函数的返回类型都是字典。所以名字们能用 keys() 函数摘取。</p>
+<h5 id="reload-函数"><a href="#reload-函数" class="headerlink" title="reload() 函数"></a>reload() 函数</h5><hr>
+<p><strong>当一个模块被导入到一个脚本，模块顶层部分的代码只会被执行一次。</strong></p>
+<p><strong>因此，如果你想重新执行模块里顶层部分的代码，可以用 reload() 函数。该函数会重新导入之前导入过的模块。语法如下：</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">reload(module_name)</span><br></pre></td></tr></table></figure>
+
+<p><strong>在这里，module_name要直接放模块的名字，而不是一个字符串形式。</strong>比如想重载 hello 模块，如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">reload(hello)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技术学习</category>
+      </categories>
+      <tags>
+        <tag>Python学习</tag>
       </tags>
   </entry>
   <entry>
@@ -3346,6 +3346,62 @@
       </tags>
   </entry>
   <entry>
+    <title>Swift Runtime</title>
+    <url>/2018/04/18/2018-04-18-Swift%20Runtime/</url>
+    <content><![CDATA[<p>我们都知道 Objective-C 是一门动态的语言，有的时候我们会使用 <code>Runtime</code> 处理一些在 Objective-C 上面无法实现或者很难实现的功能。例如：在扩展中添加属性；动态的获取属性的名称，方法名等。那么究竟什么是 <code>Runtime</code>？</p>
+<p><strong>什么是 <code>Runtime</code> ？</strong></p>
+<p><code>Runtime</code> 简称运行时。Objective-C 就是运行时机制，也就是在程序运行时候的一些机制，其中最主要的是消息机制。对于我们熟悉的C语言，函数的调用在编译的时候会决定调用哪个函数。但对于 Objective-C 的函数，属于动态调用过程，在编译的时候并不能决定真正调用哪个函数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。</p>
+<p>也就有了下面这两点结论：</p>
+<ol>
+<li>在编译阶段，Objective-C 可以调用任何函数，即使这个函数并未实现，只要声明过就不会报错。</li>
+<li>在编译阶段，C语言调用未实现的函数就会报错。</li>
+</ol>
+<a id="more"></a>
+
+<h3 id="Swift-中的-Runtime"><a href="#Swift-中的-Runtime" class="headerlink" title="Swift 中的 Runtime"></a>Swift 中的 Runtime</h3><hr>
+<p>好了上面说了这么多都是在说 Objective-C 的 <code>Runtime</code>，那么 Swift 的 <code>Runtime</code> 是什么样的呢？我们来写几行代码看一下。</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name: <span class="type">String?</span></span><br><span class="line">    <span class="keyword">var</span> address: <span class="type">String?</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">myPrint</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Demo&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="built_in">count</span>: <span class="type">UInt32</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> demo = <span class="type">Demo</span>()</span><br><span class="line"><span class="keyword">let</span> list = class_copyPropertyList(object_getClass(demo), &amp;<span class="built_in">count</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> <span class="number">0</span>..&lt;<span class="built_in">numericCast</span>(<span class="built_in">count</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> item = list?[idx],</span><br><span class="line">        <span class="keyword">let</span> name = <span class="type">String</span>(utf8String: property_getName(item)) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Property: \(name)&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>猜一下，会输出什么？当然，<strong>这里什么都不输出</strong>！为什么？因为我们创建的类 <code>Demo</code> 是一个纯 Swift 的类，因为 Swift 是一门静态语言，所以我们对其运用 <code>Runtime</code> 机制当然是不可能获取到 <code>Demo</code> 类的属性的。如果我非要在 Swift 代码中运用 <code>Runtime</code> 技术呢？当然是有办法的。我们可以在你要获取的属性（函数同理）前用 <code>@objc</code> 修饰即可（当然加上 <code>dynamic</code> 也是可以的，不过编译器会提示错误，必须要在 <code>dynamic</code> 前添加 <code>@objc</code>），就像如下这样：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="meta">@objc</span> <span class="keyword">var</span> name: <span class="type">String?</span></span><br><span class="line">    <span class="meta">@objc</span> <span class="keyword">dynamic</span> <span class="keyword">var</span> address: <span class="type">String?</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">myPrint</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Demo&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在添加如下的代码来打印出方法名：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> fCount: <span class="type">UInt32</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> funcList = class_copyMethodList(object_getClass(demo), &amp;fCount)</span><br><span class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> <span class="number">0</span>..&lt;<span class="built_in">numericCast</span>(fCount) &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> item = funcList?[idx] &#123;</span><br><span class="line">        <span class="keyword">let</span> name = <span class="type">NSStringFromSelector</span>(method_getName(item))</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Method: \(name)&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">Property</span>: name</span><br><span class="line"><span class="type">Property</span>: address</span><br><span class="line"><span class="type">Method</span>: address</span><br><span class="line"><span class="type">Method</span>: name</span><br><span class="line"><span class="type">Method</span>: setName:</span><br><span class="line"><span class="type">Method</span>: setAddress:</span><br><span class="line"><span class="type">Method</span>: myPrint</span><br></pre></td></tr></table></figure>
+
+<p>为什么加上 <code>@objc</code> 就有 <code>Runtime</code> 机制了呢？Swift 不是静态语言吗？</p>
+<p>我们来看一下官方文档里对 <code>@objc</code> 是怎么说的。</p>
+<blockquote>
+<p>把这个特性用到任何可以在 Objective-C 中表示的声明上——例如，非内嵌类，协议，非泛型枚举（原始值类型只能是整数），类和协议的属性、方法（包括 <code>setter</code> 和 <code>getter</code> ），初始化&gt; &gt; 器，反初始化器，下标。 <code>objc</code> 特性告诉编译器，这个声明在 Objective-C 代码中是可用的。</p>
+<p>给扩展应用这个特性与为这个扩展中所有不显式标记为 nonobjc 特性的成员应用是一样的效果。</p>
+<p>用 <code>objc</code> 特性标记的类必须继承自一个 Objective-C 中定义的类。如果你把 <code>objc</code> 用到类或协议中，它会隐式地应用于该类或协议中 Objective-C 兼容的成员上。如果一个类继承自另一个&gt; 带 <code>objc</code> 特性标记或 Objective-C 中定义的类，编译器也会隐式地给这个类添加 <code>objc</code> 特性。标记为 <code>objc</code> 特性的协议不能继承自非 <code>objc</code> 特性的协议。</p>
+<p><code>objc</code> 特性同样会在下面的情况中隐式地添加：</p>
+<ul>
+<li>声明是子类的重写，并且父类的声明有 <code>objc</code> 特性；</li>
+<li>声明满足的需求来自一个拥有 <code>objc</code> 特性的协议；</li>
+<li>声明有 <code>IBAction</code> , <code>IBOutlet</code> , <code>IBDesignable</code> , <code>IBInspectable</code> , <code>NSManaged</code>, 或者 <code>GKInspectable</code> 特性。</li>
+</ul>
+<p>如果你在一个枚举中使用 <code>objc</code> 特性，枚举名和每个成员名串联起来，作为枚举成员暴露给 Objective-C 代码。成员名首字母大写。例如，一个 Swift  <code>Planet</code> 枚举成员叫做 <code>venus</code> ，&gt; 它作为一个叫 <code>PlanetVenus</code> 的成员暴露到 Objective-C 代码中。</p>
+<p><code>objc</code> 特性可以接受一个特性实参，由一个标识符组成。当你想在 Objective-C 中为 <code>objc</code> 特性标记的实体暴露一个不同的名字时，用这个特性。你可以把这个实参用在命名类，枚举，枚举成&gt; 员，协议，方法，getter，setter，初始化器。下面的例子把 ExampleClass 中 enabled 属性的getter作为 isEnabled 暴露给 Objective-C 代码，而不仅仅是属性本身的名字。</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="meta">@objc</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleClass</span>: <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> enabled: <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="meta">@objc</span>(isEnabled) <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="comment">// Return the appropriate value</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>首先有 <code>@objc</code> 这个关键字，它是用来将 Swift 的 API 暴漏给 Objective-C 和 <code>Runtime</code> 使用的，文档里也很清楚的说明了，如果你类继承自 Objective-C 的类，这个标识符就会被自动加进去，加了这标识符的属性、方法无法保证都会被运行时调用，因为 Swift 会做静态优化，想要完全被声明成动态调用，必须使用 <code>dynamic</code> 标识符修饰，当然添加了 <code>dynamic</code> 的时候，它会自己在加上 <code>@objc</code> 这个标识符。</p>
+<p>举个例子：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span>: <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> dBool = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">var</span> dInt = <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">demoTest</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;NSObject Class&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然这时我们没有在 <code>dBool</code> 和 <code>dInt</code> 两个属性添加 <code>@objc</code> 修饰，但是 <code>Runtime</code> 时依然能够获取到，因为类继承了 Objective-C 中的 <code>NSObject</code>，他会隐式的在属相前面添加 <code>@objc</code>，同理，继承自 <code>UIViewController</code> 等的类，都有这个特性。</p>
+]]></content>
+      <categories>
+        <category>技术学习</category>
+      </categories>
+      <tags>
+        <tag>Swift</tag>
+        <tag>iOS</tag>
+        <tag>Objective-C</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>iOS 并发，锁，线程同步【一】GCD</title>
     <url>/2018/04/16/2018-04-16-iOS%20%E5%B9%B6%E5%8F%91%EF%BC%8C%E9%94%81%EF%BC%8C%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E3%80%90%E4%B8%80%E3%80%91GCD/</url>
     <content><![CDATA[<p>无并发，不编程。并发在开发中是非常重要的一个技术，运用并发技术，可以写出高性能的程序，并发能够有效地利用多核心 CPU 的优势来提高数据处理的速度。作为一个码农，学好并发是十分有必要的。iOS有四种多线程编程的技术，分别是：NSThread，Cocoa NSOperation，GCD（全称：Grand Central Dispatch）, pthread。今天我们就重点讲一讲 GCD 中的并发，锁和线程同步。</p>
@@ -3416,62 +3472,6 @@
         <tag>Swift</tag>
         <tag>iOS</tag>
         <tag>线程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Swift Runtime</title>
-    <url>/2018/04/18/2018-04-18-Swift%20Runtime/</url>
-    <content><![CDATA[<p>我们都知道 Objective-C 是一门动态的语言，有的时候我们会使用 <code>Runtime</code> 处理一些在 Objective-C 上面无法实现或者很难实现的功能。例如：在扩展中添加属性；动态的获取属性的名称，方法名等。那么究竟什么是 <code>Runtime</code>？</p>
-<p><strong>什么是 <code>Runtime</code> ？</strong></p>
-<p><code>Runtime</code> 简称运行时。Objective-C 就是运行时机制，也就是在程序运行时候的一些机制，其中最主要的是消息机制。对于我们熟悉的C语言，函数的调用在编译的时候会决定调用哪个函数。但对于 Objective-C 的函数，属于动态调用过程，在编译的时候并不能决定真正调用哪个函数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。</p>
-<p>也就有了下面这两点结论：</p>
-<ol>
-<li>在编译阶段，Objective-C 可以调用任何函数，即使这个函数并未实现，只要声明过就不会报错。</li>
-<li>在编译阶段，C语言调用未实现的函数就会报错。</li>
-</ol>
-<a id="more"></a>
-
-<h3 id="Swift-中的-Runtime"><a href="#Swift-中的-Runtime" class="headerlink" title="Swift 中的 Runtime"></a>Swift 中的 Runtime</h3><hr>
-<p>好了上面说了这么多都是在说 Objective-C 的 <code>Runtime</code>，那么 Swift 的 <code>Runtime</code> 是什么样的呢？我们来写几行代码看一下。</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name: <span class="type">String?</span></span><br><span class="line">    <span class="keyword">var</span> address: <span class="type">String?</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">myPrint</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Demo&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="built_in">count</span>: <span class="type">UInt32</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> demo = <span class="type">Demo</span>()</span><br><span class="line"><span class="keyword">let</span> list = class_copyPropertyList(object_getClass(demo), &amp;<span class="built_in">count</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> <span class="number">0</span>..&lt;<span class="built_in">numericCast</span>(<span class="built_in">count</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> item = list?[idx],</span><br><span class="line">        <span class="keyword">let</span> name = <span class="type">String</span>(utf8String: property_getName(item)) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Property: \(name)&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>猜一下，会输出什么？当然，<strong>这里什么都不输出</strong>！为什么？因为我们创建的类 <code>Demo</code> 是一个纯 Swift 的类，因为 Swift 是一门静态语言，所以我们对其运用 <code>Runtime</code> 机制当然是不可能获取到 <code>Demo</code> 类的属性的。如果我非要在 Swift 代码中运用 <code>Runtime</code> 技术呢？当然是有办法的。我们可以在你要获取的属性（函数同理）前用 <code>@objc</code> 修饰即可（当然加上 <code>dynamic</code> 也是可以的，不过编译器会提示错误，必须要在 <code>dynamic</code> 前添加 <code>@objc</code>），就像如下这样：</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="meta">@objc</span> <span class="keyword">var</span> name: <span class="type">String?</span></span><br><span class="line">    <span class="meta">@objc</span> <span class="keyword">dynamic</span> <span class="keyword">var</span> address: <span class="type">String?</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">myPrint</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Demo&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们在添加如下的代码来打印出方法名：</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> fCount: <span class="type">UInt32</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> funcList = class_copyMethodList(object_getClass(demo), &amp;fCount)</span><br><span class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> <span class="number">0</span>..&lt;<span class="built_in">numericCast</span>(fCount) &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> item = funcList?[idx] &#123;</span><br><span class="line">        <span class="keyword">let</span> name = <span class="type">NSStringFromSelector</span>(method_getName(item))</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Method: \(name)&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>输出如下：</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">Property</span>: name</span><br><span class="line"><span class="type">Property</span>: address</span><br><span class="line"><span class="type">Method</span>: address</span><br><span class="line"><span class="type">Method</span>: name</span><br><span class="line"><span class="type">Method</span>: setName:</span><br><span class="line"><span class="type">Method</span>: setAddress:</span><br><span class="line"><span class="type">Method</span>: myPrint</span><br></pre></td></tr></table></figure>
-
-<p>为什么加上 <code>@objc</code> 就有 <code>Runtime</code> 机制了呢？Swift 不是静态语言吗？</p>
-<p>我们来看一下官方文档里对 <code>@objc</code> 是怎么说的。</p>
-<blockquote>
-<p>把这个特性用到任何可以在 Objective-C 中表示的声明上——例如，非内嵌类，协议，非泛型枚举（原始值类型只能是整数），类和协议的属性、方法（包括 <code>setter</code> 和 <code>getter</code> ），初始化&gt; &gt; 器，反初始化器，下标。 <code>objc</code> 特性告诉编译器，这个声明在 Objective-C 代码中是可用的。</p>
-<p>给扩展应用这个特性与为这个扩展中所有不显式标记为 nonobjc 特性的成员应用是一样的效果。</p>
-<p>用 <code>objc</code> 特性标记的类必须继承自一个 Objective-C 中定义的类。如果你把 <code>objc</code> 用到类或协议中，它会隐式地应用于该类或协议中 Objective-C 兼容的成员上。如果一个类继承自另一个&gt; 带 <code>objc</code> 特性标记或 Objective-C 中定义的类，编译器也会隐式地给这个类添加 <code>objc</code> 特性。标记为 <code>objc</code> 特性的协议不能继承自非 <code>objc</code> 特性的协议。</p>
-<p><code>objc</code> 特性同样会在下面的情况中隐式地添加：</p>
-<ul>
-<li>声明是子类的重写，并且父类的声明有 <code>objc</code> 特性；</li>
-<li>声明满足的需求来自一个拥有 <code>objc</code> 特性的协议；</li>
-<li>声明有 <code>IBAction</code> , <code>IBOutlet</code> , <code>IBDesignable</code> , <code>IBInspectable</code> , <code>NSManaged</code>, 或者 <code>GKInspectable</code> 特性。</li>
-</ul>
-<p>如果你在一个枚举中使用 <code>objc</code> 特性，枚举名和每个成员名串联起来，作为枚举成员暴露给 Objective-C 代码。成员名首字母大写。例如，一个 Swift  <code>Planet</code> 枚举成员叫做 <code>venus</code> ，&gt; 它作为一个叫 <code>PlanetVenus</code> 的成员暴露到 Objective-C 代码中。</p>
-<p><code>objc</code> 特性可以接受一个特性实参，由一个标识符组成。当你想在 Objective-C 中为 <code>objc</code> 特性标记的实体暴露一个不同的名字时，用这个特性。你可以把这个实参用在命名类，枚举，枚举成&gt; 员，协议，方法，getter，setter，初始化器。下面的例子把 ExampleClass 中 enabled 属性的getter作为 isEnabled 暴露给 Objective-C 代码，而不仅仅是属性本身的名字。</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="meta">@objc</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExampleClass</span>: <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> enabled: <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="meta">@objc</span>(isEnabled) <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="comment">// Return the appropriate value</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>首先有 <code>@objc</code> 这个关键字，它是用来将 Swift 的 API 暴漏给 Objective-C 和 <code>Runtime</code> 使用的，文档里也很清楚的说明了，如果你类继承自 Objective-C 的类，这个标识符就会被自动加进去，加了这标识符的属性、方法无法保证都会被运行时调用，因为 Swift 会做静态优化，想要完全被声明成动态调用，必须使用 <code>dynamic</code> 标识符修饰，当然添加了 <code>dynamic</code> 的时候，它会自己在加上 <code>@objc</code> 这个标识符。</p>
-<p>举个例子：</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span>: <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> dBool = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">var</span> dInt = <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">demoTest</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;NSObject Class&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>虽然这时我们没有在 <code>dBool</code> 和 <code>dInt</code> 两个属性添加 <code>@objc</code> 修饰，但是 <code>Runtime</code> 时依然能够获取到，因为类继承了 Objective-C 中的 <code>NSObject</code>，他会隐式的在属相前面添加 <code>@objc</code>，同理，继承自 <code>UIViewController</code> 等的类，都有这个特性。</p>
-]]></content>
-      <categories>
-        <category>技术学习</category>
-      </categories>
-      <tags>
-        <tag>Swift</tag>
-        <tag>iOS</tag>
-        <tag>Objective-C</tag>
       </tags>
   </entry>
   <entry>
@@ -5756,6 +5756,70 @@
       </categories>
       <tags>
         <tag>framework</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FFmpeg Xcode 环境搭建</title>
+    <url>/2021/06/29/2021-06-29-FFmpeg%20Xcode%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="安装-FFmpeg"><a href="#安装-FFmpeg" class="headerlink" title="安装 FFmpeg"></a>安装 FFmpeg</h1><p>根据 <a href="https://trac.ffmpeg.org/wiki/CompilationGuide/macOS">官方文档</a> 的描述，有三种安装 FFmpeg 的方式，这里我们选择最简单快速的一种，使用 <code>Homebrew</code> 命令安装。</p>
+<p>如果还没有安装 <code>Homebrew</code> 的话，请先安装 <code>Homebrew</code>，<a href="https://brew.sh/">点击跳转官方网站</a></p>
+<p>我们执行如下命令即可安装好 FFmpeg：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install ffmpeg</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h1 id="Xcode-相关配置"><a href="#Xcode-相关配置" class="headerlink" title="Xcode 相关配置"></a>Xcode 相关配置</h1><h2 id="Build-Settings"><a href="#Build-Settings" class="headerlink" title="Build Settings"></a>Build Settings</h2><p>我们通过如下命令即可查看 FFmpeg 的相关信息</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew info ffmpeg</span><br></pre></td></tr></table></figure>
+
+<p>会输出类似下面一样的信息</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg: stable 4.4 (bottled), HEAD</span><br><span class="line">Play, record, convert, and stream audio and video</span><br><span class="line">https://ffmpeg.org/</span><br><span class="line">/usr/<span class="built_in">local</span>/Cellar/ffmpeg/4.4_2 (276 files, 52.7MB) *</span><br><span class="line">  Poured from bottle on 2021-06-25 at 00:50:35</span><br><span class="line">From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/ffmpeg.rb</span><br><span class="line">License: GPL-2.0-or-later</span><br><span class="line">==&gt; Dependencies</span><br><span class="line">Build: nasm ✔, pkg-config ✔</span><br><span class="line">Required: aom ✔, dav1d ✔, fontconfig ✔, freetype ✔, frei0r ✔, gnutls ✔, lame ✔, libass ✔, libbluray ✔, libsoxr ✔, libvidstab ✔, libvorbis ✔, libvpx ✔, opencore-amr ✔, openjpeg ✔, opus ✔, rav1e ✔, rubberband ✔, sdl2 ✔, snappy ✔, speex ✔, srt ✔, tesseract ✔, theora ✔, webp ✔, x264 ✔, x265 ✔, xvid ✔, xz ✔, zeromq ✔, zimg ✔</span><br><span class="line">==&gt; Options</span><br><span class="line">--HEAD</span><br><span class="line">	Install HEAD version</span><br><span class="line">==&gt; Analytics</span><br><span class="line">install: 124,147 (30 days), 436,612 (90 days), 1,751,038 (365 days)</span><br><span class="line">install-on-request: 102,817 (30 days), 366,434 (90 days), 1,443,249 (365 days)</span><br><span class="line">build-error: 0 (30 days)</span><br></pre></td></tr></table></figure>
+
+<p>我们在信息中可以找到 FFmpeg 的安装目录如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/Cellar/ffmpeg/4.4_2</span><br></pre></td></tr></table></figure>
+
+<p>目录中包括两个文件夹 <code>lib</code> 和 <code>include</code>，这两个文件夹我们需要在 <code>Xcode</code> 中配置相关搜索路径。我们打开 <code>Xcode</code> 的 <code>Build Settings</code> 界面，配置 <code>Header Search Paths</code> 和 <code>Library Search Paths</code>。我的本地环境配置如下图所示：</p>
+<p><img src="/my_pictures/Xnip2021-06-29_21-52-35.png"></p>
+<h2 id="Library"><a href="#Library" class="headerlink" title="Library"></a>Library</h2><p>我们切换到 <code>General</code> 或 <code>Build Phases</code>，将 <code>FFmpeg</code> 目录下的 <code>lib</code> 文件夹中的 <code>.a</code> 文件按需添加，如下图：</p>
+<p><img src="/my_pictures/Xnip2021-06-29_21-59-11.png"><br><img src="/my_pictures/Xnip2021-06-29_21-59-56.png"><br><img src="/my_pictures/Xnip2021-06-29_21-58-14.png"></p>
+<p>此时我们的环境就算是配置完毕。</p>
+<p>我们在类中随便加点代码：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Cocoa</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ViewController</span>: <span class="title">NSViewController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        av_log_set_flags(<span class="type">AV_LOG_SKIP_REPEATED</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">#if</span> <span class="type">CONFIG_AVDEVICE</span></span><br><span class="line">            avdevice_register_all();</span><br><span class="line">        <span class="keyword">#endif</span></span><br><span class="line">        avformat_network_init()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">var</span> representedObject: <span class="type">Any?</span> &#123;</span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>桥接文件</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/avstring.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/eval.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/mathematics.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/pixdesc.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/imgutils.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/dict.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/fifo.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/parseutils.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/samplefmt.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/avassert.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/time.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/bprint.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavformat/avformat.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavdevice/avdevice.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libswscale/swscale.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavutil/opt.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libavcodec/avfft.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;libswresample/swresample.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>此时我们 <code>Build</code> 一下，发现是可以编译通过的。</p>
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p><code>Build</code> 没问题了，我们 <code>run</code> 一下。此时我们可能碰到 <code>crash</code>，提示信息如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dyld: Library not loaded: /usr/<span class="built_in">local</span>/opt/ffmpeg/lib/libswscale.5.dylib</span><br><span class="line">  Referenced from: /Users/jiafengwu/Library/Developer/Xcode/DerivedData/ffdemo-gqmgjyhlyiyktmdpikmfktmubkzg/Build/Products/Debug/ffdemo.app/Contents/MacOS/ffdemo</span><br><span class="line">  Reason: no suitable image found.  Did find:</span><br><span class="line">	/usr/<span class="built_in">local</span>/opt/ffmpeg/lib/libswscale.5.dylib: code signature <span class="keyword">in</span> (/usr/<span class="built_in">local</span>/opt/ffmpeg/lib/libswscale.5.dylib) not valid <span class="keyword">for</span> use <span class="keyword">in</span> process using Library Validation: mapped file has no cdhash, completely unsigned? Code has to be at least ad-hoc signed.</span><br><span class="line">	/usr/<span class="built_in">local</span>/lib/libswscale.5.dylib: code signature <span class="keyword">in</span> (/usr/<span class="built_in">local</span>/lib/libswscale.5.dylib) not valid <span class="keyword">for</span> use <span class="keyword">in</span> process using Library Validation: mapped file has no cdhash, completely unsigned? Code has to be at least ad-hoc signed.</span><br><span class="line">	/usr/<span class="built_in">local</span>/Cellar/ffmpeg/4.4_2/lib/libswscale.5.9.100.dylib: code signature <span class="keyword">in</span> (/usr/<span class="built_in">local</span>/Cellar/ffmpeg/4.4_2/lib/libswscale.5.9.100.dylib) not valid <span class="keyword">for</span> use <span class="keyword">in</span> process using Library Validation: mapped file has no cdhash, completely unsigned? Code has to be at least ad-hoc signed.</span><br></pre></td></tr></table></figure>
+
+<p>从提示信息我们可知，是动态库没有签名。我们还需将其手动签名一下。顺便说一句，上面的报错是在 <code>FFmpeg</code> 目录中的 <code>lib</code> 目录下，我们将其签名后可能还有其他库需要签名，我的解决方式是，直接吧报错目录下的所有动态库批量签名。</p>
+<p>我们从钥匙串中找到我们证书的名字，类似于：<code>Apple Development: xxx</code>。</p>
+<p>我们打开终端，进入对应目录，执行如下签名命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">codesign -f -s <span class="string">&quot;Apple Development: xxx&quot;</span> *.dylib</span><br></pre></td></tr></table></figure>
+
+<p><strong>引号中的证书信息需要替换成自己的</strong></p>
+<p>因为 <code>Xcode</code> 运行代码使用了系统的库，所以我就批量的进行了签名：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">codesign -f -s <span class="string">&quot;Mac Developer: xxx&quot;</span> /usr/<span class="built_in">local</span>/opt/*/lib/*.dylib</span><br></pre></td></tr></table></figure>
+
+<p>当我们签名完成之后，再次进行 <code>run</code>，发现就能跑起来了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>签名的相关命令</p>
+<p>1、清除动态库的签名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">codesign --remove-signature xxx.dylib</span><br></pre></td></tr></table></figure>
+
+<p>2、查看签名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">codesign -vv -d xxx.dylib</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">codesign -dvvv xxx.dylib</span><br></pre></td></tr></table></figure>
+
+<p>3、重新签名</p>
+<p><code>codesign</code> 的 <code>-f</code> 参数就是强制签名的意思，本文使用的 <code>codesign -f -s</code> 就能直接重新签名。如果不想覆盖原来的签名，可以把 <code>-f</code> 参数去掉。</p>
+]]></content>
+      <categories>
+        <category>macOS 开发</category>
+      </categories>
+      <tags>
+        <tag>ffmpeg</tag>
       </tags>
   </entry>
 </search>

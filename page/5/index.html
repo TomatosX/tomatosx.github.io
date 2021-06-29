@@ -224,20 +224,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-count">95</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -275,6 +275,99 @@
       
 
       
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/04/09/2018-04-09-RxSwift%20%E6%96%87%E6%A1%A3%EF%BC%9AObservable%20&%20Observer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="CX330">
+      <meta itemprop="description" content="Stay hungry. Stay foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CX330">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/09/2018-04-09-RxSwift%20%E6%96%87%E6%A1%A3%EF%BC%9AObservable%20&%20Observer/" class="post-title-link" itemprop="url">RxSwift 文档：Observable & Observer</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-09 00:00:00" itemprop="dateCreated datePublished" datetime="2018-04-09T00:00:00+08:00">2018-04-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">技术学习</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Observer-观察者"><a href="#Observer-观察者" class="headerlink" title="Observer - 观察者"></a>Observer - 观察者</h2><hr>
+<h3 id="AnyObserver"><a href="#AnyObserver" class="headerlink" title="AnyObserver"></a>AnyObserver</h3><hr>
+<p><code>AnyObserver</code> 可以用来描叙任意一种观察者。</p>
+<p>例如：</p>
+<p>打印网络请求结果：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">URLSession</span>.shared.rx.data(request: <span class="type">URLRequest</span>(url: url))</span><br><span class="line">    .subscribe(onNext: &#123; data <span class="keyword">in</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Data Task Success with count: \(data.count)&quot;</span>)</span><br><span class="line">    &#125;, onError: &#123; error <span class="keyword">in</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Data Task Error: \(error)&quot;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    .disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/09/2018-04-09-RxSwift%20%E6%96%87%E6%A1%A3%EF%BC%9AObservable%20&%20Observer/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
     
 
 
@@ -1093,105 +1186,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/03/29/2018-03-29-Swift%20ABI%20Stability%20Manifesto/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/03/28/2018-03-28-GitHub%20%E5%8D%9A%E5%AE%A2%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="CX330">
-      <meta itemprop="description" content="Stay hungry. Stay foolish.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CX330">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/28/2018-03-28-GitHub%20%E5%8D%9A%E5%AE%A2%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3/" class="post-title-link" itemprop="url">GitHub 博客报错解决</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2018-03-28 00:00:00" itemprop="dateCreated datePublished" datetime="2018-03-28T00:00:00+08:00">2018-03-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-16 11:22:25" itemprop="dateModified" datetime="2021-06-16T11:22:25+08:00">2021-06-16</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%97%A5%E5%BF%97/" itemprop="url" rel="index"><span itemprop="name">日志</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>今天提交文章到 GitHub 博客中，却总是出现</p>
-<p>The file <code>vendor/cache/ruby/2.5.0/gems/jekyll-3.6.2/lib/site_template/_posts/0000-00-00-welcome-to-jekyll.markdown.erb</code> does not have a valid date in the YAML front matter. 的错误</p>
-<p>错误具体信息如下：</p>
-<blockquote>
-<p>The page build failed for the <code>master</code> branch with the following error:  </p>
-<p>The file <code>vendor/cache/ruby/2.5.0/gems/jekyll-3.6.2/lib/site_template/_posts/0000-00-00-welcome-to-jekyll.markdown.erb</code> does not have a valid date in the YAML front matter. For more information, see </p>
-<p>  <a target="_blank" rel="noopener" href="https://help.github.com/articles/page-build-failed-invalid-post-date/">https://help.github.com/articles/page-build-failed-invalid-post-date/</a>.  </p>
-<p>For information on troubleshooting Jekyll see:  </p>
-<p>  <a target="_blank" rel="noopener" href="https://help.github.com/articles/troubleshooting-jekyll-builds">https://help.github.com/articles/troubleshooting-jekyll-builds</a>  </p>
-<p>If you have any questions you can contact us by replying to this email.  </p>
-</blockquote>
-<p>在 <code>jekyll</code> 的 Issues 中，找到了解决方式</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/03/28/2018-03-28-GitHub%20%E5%8D%9A%E5%AE%A2%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
